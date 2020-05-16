@@ -1,0 +1,2 @@
+rootProject.name='stilla_app'
+include ':app'
