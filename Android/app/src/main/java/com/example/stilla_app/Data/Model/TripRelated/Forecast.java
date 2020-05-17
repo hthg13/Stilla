@@ -1,4 +1,4 @@
-package com.example.stilla_app.Data.Model;
+package com.example.stilla_app.Data.Model.TripRelated;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;

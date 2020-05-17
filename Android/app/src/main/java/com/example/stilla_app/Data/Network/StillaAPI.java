@@ -1,10 +1,10 @@
 package com.example.stilla_app.Data.Network;
 
-import com.example.stilla_app.Data.Model.Forecasts;
+import com.example.stilla_app.Data.Model.MapsRelated.Directions;
+import com.example.stilla_app.Data.Model.TripRelated.Forecasts;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
-import com.example.stilla_app.Data.Model.WeatherStation;
-import com.example.stilla_app.Data.Model.WeatherStations;
-import com.example.stilla_app.Data.Model.TextForecast;
+import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
+import com.example.stilla_app.Data.Model.TripRelated.TextForecast;
 
 import java.util.List;
 
@@ -18,6 +18,11 @@ public interface StillaAPI {
 
     String BASE_URL_STILLA_API = "http://10.0.2.2:8080";
     String BASE_URL_VEDUR_API = "https://xmlweather.vedur.is";
+    String GOOGLE_DIRECTIONS_API = "https://maps.googleapis.com/maps/api/directions/json";
+    String GOOGLE_API_KEY = "AIzaSyDe762ykwpo7NedQysCHa0KtB3-WyZQAjE";
+
+
+    // VEÐURSTOFAN ---------------------------------------------------------------------------------
 
     /**
      * @param op_w must be "xml"
@@ -37,6 +42,8 @@ public interface StillaAPI {
     @GET(BASE_URL_VEDUR_API + "/?op_w=xml&type=txt&lang=is&view=rss&ids=5")
     Call<TextForecast> getWeatherTextNextDays();
 
+    // STILLA BACKEND ---------------------------------------------------------------------------------
+
     // gets all weather stations in a list from stilla server
     @GET(BASE_URL_STILLA_API + "/weather_stations")
     Call<List<WeatherStation>> getAllStations();
@@ -48,4 +55,9 @@ public interface StillaAPI {
     // should post to the server a new trip from user interface
     @POST(BASE_URL_STILLA_API + "/saveTrip")
     Call<Trip> saveTrip(@Body Trip tip);
+
+    // GOOGLE -----------------------------------------------------------------------------------------
+
+    @GET(GOOGLE_DIRECTIONS_API)
+    Call<Directions> getDirections(@Query("origin") String origin, @Query("destination") String destination, @Query("key") String key);
 }

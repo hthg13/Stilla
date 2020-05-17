@@ -1,8 +1,7 @@
 package com.example.stilla_app.Data.Model.TripRelated;
 
-import com.example.stilla_app.Data.Model.WeatherStations;
-import com.example.stilla_app.Data.Model.WeatherStation;
-import com.example.stilla_app.Data.Model.Forecast;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -105,5 +104,18 @@ public class Trip {
 
     public void setWeatherForecasts(List<Forecast> weatherForecasts) {
         this.weatherForecast = weatherForecasts;
+    }
+
+    @JsonIgnore
+    public List<LatLng> getAllStationCoordinates() {
+        List<LatLng> latLngList = new ArrayList<>();
+
+        int n = this.weatherStation.size();
+
+        for (int i=0; i<n; i++) {
+            latLngList.add(this.weatherStation.get(i).getLatLng());
+        }
+
+        return latLngList;
     }
 }

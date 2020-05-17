@@ -10,6 +10,7 @@ public class StillaClient {
     private static Retrofit retrofit = null;
     private static final String STILLA_API_URL = "http://10.0.2.2:8080"; //localhost
     private static final String VEDUR_API_URL = "https://xmlweather.vedur.is/?op_w=xml&type=forec&lang=is&view=xml&ids=1";
+    private static final String GOOGLE_DIRECTIONS_API_CLIENT = "https://maps.googleapis.com/maps/api/directions/json/";
 
     /**
      * Uses simple converter factory for XML: http://simple.sourceforge.net/home.php
@@ -30,4 +31,13 @@ public class StillaClient {
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
     }
+
+    public static Retrofit getGoogleDirectionsClient() {
+        return new Retrofit.Builder()
+                .baseUrl(STILLA_API_URL)
+                .client(new OkHttpClient())
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+    }
+
 }

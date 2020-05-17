@@ -4,17 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.stilla_app.Data.Model.Forecast;
-import com.example.stilla_app.Data.Model.Forecasts;
-import com.example.stilla_app.Data.Model.TextForecast;
+import com.example.stilla_app.Data.Model.TripRelated.Forecast;
+import com.example.stilla_app.Data.Model.TripRelated.Forecasts;
+import com.example.stilla_app.Data.Model.TripRelated.TextForecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
-import com.example.stilla_app.Data.Model.WeatherStation;
+import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
+import static com.example.stilla_app.Data.Model.TripRelated.WeatherStation.getAllStationLatLng;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -120,10 +121,18 @@ public class MainActivity extends AppCompatActivity {
                 getAllTrips();
                 System.out.println(mTripList); //virkar! fæ allt rétt til baka :) :) :)
 
-                /*Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                String message = "halló";
-                intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);*/
+                System.out.println(allStations.get(0).getLatLng());
+                List<LatLng> latLngList = mTripList.get(2).getAllStationCoordinates();
+                System.out.println(latLngList);
+                List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
+                System.out.println(allStationsLatLng);
+
+
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("allStations", new ArrayList<WeatherStation>(allStations));
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
     }

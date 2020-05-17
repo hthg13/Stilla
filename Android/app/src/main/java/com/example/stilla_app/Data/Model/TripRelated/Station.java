@@ -1,4 +1,6 @@
-package com.example.stilla_app.Data.Model;
+package com.example.stilla_app.Data.Model.TripRelated;
+
+import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;

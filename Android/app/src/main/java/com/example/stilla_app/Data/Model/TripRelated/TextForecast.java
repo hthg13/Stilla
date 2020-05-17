@@ -1,4 +1,4 @@
-package com.example.stilla_app.Data.Model;
+package com.example.stilla_app.Data.Model.TripRelated;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;

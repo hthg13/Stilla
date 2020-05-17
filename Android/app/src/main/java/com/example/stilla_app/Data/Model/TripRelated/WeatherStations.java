@@ -1,8 +1,6 @@
-package com.example.stilla_app.Data.Model;
+package com.example.stilla_app.Data.Model.TripRelated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
 
 public class WeatherStations {
 

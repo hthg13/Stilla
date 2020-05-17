@@ -1,13 +1,19 @@
-package com.example.stilla_app.Data.Model;
+package com.example.stilla_app.Data.Model.TripRelated;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 //@JsonRootName(value = "station")
-public class WeatherStation {
+public class WeatherStation implements Parcelable {
     /*@JsonProperty(value = "Nafn", required = false)
     private String name;
     @JsonProperty(value = "Tegund", required = false)
@@ -155,6 +161,89 @@ public class WeatherStation {
 
         return newStation;
     }
+
+    @JsonIgnore
+    public LatLng getLatLng() {
+        //"65°41.135', 18°06.014' (65,6856, 18,1002)"
+        String s = this.coordinates;
+
+        s = s.substring(s.indexOf("(") + 1);
+        s = s.substring(0, s.indexOf(")"));
+
+        String[] substrings = s.split(", ");
+
+        String slat = substrings[0].replace(",",".");
+        String slng = substrings[1].replace(",",".");
+
+        slng = "-" + slng;
+
+        double lat = Double.parseDouble(slat);
+        double lng = Double.parseDouble(slng);
+
+        return new LatLng(lat,lng);
+    }
+
+    @JsonIgnore
+    public static List<LatLng> getAllStationLatLng(List<WeatherStation> allStations) {
+        int n = allStations.size();
+        List<LatLng> latLngList = new ArrayList<>();
+
+        for (int i=0; i<n; i++) {
+            WeatherStation currStation = allStations.get(i);
+
+            latLngList.add(currStation.getLatLng());
+        }
+
+        return latLngList;
+    }
+
+    @JsonIgnore
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @JsonIgnore
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.coordinates);
+        dest.writeString(this.forecastArea);
+        dest.writeString(this.hightOverSea);
+        dest.writeString(this.name);
+        dest.writeString(this.owner);
+        dest.writeString(this.shortName);
+        dest.writeString(this.startOfMeasuring);
+        dest.writeString(this.type);
+        dest.writeString(this.WMO_number);
+    }
+
+    @JsonIgnore
+    public WeatherStation(Parcel in) {
+        this.id = in.readLong();
+        this.coordinates = in.readString();
+        this.forecastArea= in.readString();
+        this.hightOverSea= in.readString();
+        this.name= in.readString();
+        this.owner= in.readString();
+        this.shortName= in.readString();
+        this.startOfMeasuring= in.readString();
+        this.type= in.readString();
+        this.WMO_number= in.readString();
+    }
+
+    @JsonIgnore
+    public static final Parcelable.Creator<WeatherStation> CREATOR = new Parcelable.Creator<WeatherStation>()
+    {
+        public WeatherStation createFromParcel(Parcel in)
+        {
+            return new WeatherStation(in);
+        }
+        public WeatherStation[] newArray(int size)
+        {
+            return new WeatherStation[size];
+        }
+    };
 
 }
 
