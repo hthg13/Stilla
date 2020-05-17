@@ -73,7 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);
         String origin = "Reykjavík";
-        String destination = "Höfn";
+        String destination = "Stóri Núpur";
         getDirections(origin,destination);
     }
 
