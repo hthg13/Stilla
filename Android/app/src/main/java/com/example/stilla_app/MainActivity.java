@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(mTripList); //virkar! fæ allt rétt til baka :) :) :)
 
                 System.out.println(allStations.get(0).getLatLng());
-                List<LatLng> latLngList = mTripList.get(2).getAllStationCoordinates();
+                List<LatLng> latLngList = mTripList.get(0).getAllStationCoordinates();
                 System.out.println(latLngList);
                 List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
                 System.out.println(allStationsLatLng);
