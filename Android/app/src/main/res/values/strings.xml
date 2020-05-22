@@ -2,4 +2,9 @@
     <string name="app_name">Stilla</string>
     <string name="punchline">Stillir þig að stilltu veðri</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- TAKKAR -->
+
+    <string name="add_new_trip">Ný Ferð</string>
+    <string name="vew_all_trips">Allar Ferðir</string>
 </resources>

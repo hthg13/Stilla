@@ -9,7 +9,14 @@ public class TextForecast {
     @Element(name = "channel")
     private TextNextDays textNextDays;
 
+    public TextForecast() {
+    }
+
     public TextNextDays getTextNextDays() {
         return textNextDays;
+    }
+
+    public void setTextNextDays(TextNextDays textNextDays) {
+        this.textNextDays = textNextDays;
     }
 }

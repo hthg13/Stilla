@@ -1,5 +1,8 @@
 package com.example.stilla_app.Data.Model.TripRelated;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -11,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Root
-public class Trip {
+public class Trip implements Parcelable{
     @Element
     private long id;
     @Element
@@ -118,4 +121,48 @@ public class Trip {
 
         return latLngList;
     }
+
+    @JsonIgnore
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @JsonIgnore
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.name);
+        dest.writeStringList(this.transport);
+        dest.writeString(this.start);
+        dest.writeString(this.finish);
+        dest.writeByte((byte) (this.notify ? 1 : 0));
+        dest.writeStringList(this.places);
+        dest.writeTypedList(this.weatherStation);
+    }
+
+    @JsonIgnore
+    public Trip(Parcel in) {
+        this.id = in.readLong();
+        this.name = in.readString();
+        this.transport = in.createStringArrayList();
+        this.start = in.readString();
+        this.finish = in.readString();
+        this.notify = in.readByte() != 0;
+        this.places = in.createStringArrayList();
+        this.weatherStation = in.createTypedArrayList(WeatherStation.CREATOR);
+    }
+
+    @JsonIgnore
+    public static final Creator<Trip> CREATOR = new Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel in) {
+            return new Trip(in);
+        }
+
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
 }

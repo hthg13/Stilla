@@ -1,14 +1,16 @@
-package com.example.stilla_app;
+package com.example.stilla_app.View.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class ForecastActivity extends AppCompatActivity {
+import com.example.stilla_app.R;
+
+public class TripActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forecast);
+        setContentView(R.layout.activity_trip);
     }
 }

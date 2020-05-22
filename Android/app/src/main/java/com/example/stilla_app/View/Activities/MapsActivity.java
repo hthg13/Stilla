@@ -1,4 +1,4 @@
-package com.example.stilla_app;
+package com.example.stilla_app.View.Activities;
 
 import android.os.Bundle;
 
@@ -10,6 +10,7 @@ import com.example.stilla_app.Data.Model.MapsRelated.RouteBoxer;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
+import com.example.stilla_app.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
