@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
             mTripStarts.add(currentStart);
             mTripEnds.add(currentEnd);
         }
-
         initRecyclerView();
     }
 }

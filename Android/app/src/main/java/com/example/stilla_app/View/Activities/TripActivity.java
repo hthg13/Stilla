@@ -1,5 +1,6 @@
 package com.example.stilla_app.View.Activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -48,6 +49,12 @@ public class TripActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Ný Ferð");
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        actionBar.setLogo(R.mipmap.ic_stilla_logo_and_name_round);
+        actionBar.setDisplayUseLogoEnabled(true);
 
         mAllStations = mMethodsAPI.getAllStations();
         mForecasts = mMethodsAPI.getForecasts(1, "F;D;T;W;V;N;TD;R");
