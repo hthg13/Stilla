@@ -26,7 +26,7 @@
             android:layout_margin="10dp">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/button_new_trip"
                 android:layout_width="83dp"
                 android:layout_height="35dp"
                 android:background="#B3D29F0F"
@@ -39,7 +39,7 @@
                 android:layout_weight="1" />
 
             <Button
-                android:id="@+id/button_new_trip"
+                android:id="@+id/button_show_all_trips"
                 style="@android:style/Widget.DeviceDefault.Light.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"

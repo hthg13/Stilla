@@ -19,9 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_stilla_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".View.Activities.OptionActivity">
-
-        </activity>
+        <activity android:name=".View.Activities.OptionActivity"></activity>
         <activity android:name=".View.Activities.ForecastActivity" />
         <activity android:name=".View.Activities.TripActivity" />
         <!--

@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mTripEnds = new ArrayList<>();
 
     // view things
-    private Button mbutton;
-    private Button initButton;
+    private Button createTripButton;
+    private Button viewAllTripsButton;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
 
@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setLogo(R.mipmap.ic_stilla_logo_and_name_round);
         actionBar.setDisplayUseLogoEnabled(true);
 
-        mbutton = (Button) findViewById(R.id.button);
-        initButton = (Button) findViewById(R.id.button_new_trip);
+        createTripButton = (Button) findViewById(R.id.button_new_trip);
+        viewAllTripsButton = (Button) findViewById(R.id.button_show_all_trips);
 
         mTripList = mMethodsAPI.getTripList();
         initListItems(mTripList);
@@ -97,33 +97,28 @@ public class MainActivity extends AppCompatActivity {
         //stillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class); //do not remove
         //getForecasts();
         mForecasts = mMethodsAPI.getForecasts(StationId, params);
-        //getTextForecast();
 
-
-        //stillaAPI = StillaClient.getStillaClient().create(StillaAPI.class);
-
-        mbutton.setOnClickListener(new View.OnClickListener() {
+        createTripButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mTextForecast = mMethodsAPI.getTextForecast();
+                Intent intent = new Intent(MainActivity.this, TripActivity.class);
+                startActivity(intent);
+
+                // TODO REMOVE ALL BELOW THIS LINE ----------------------------------------------------------------------------------
+
                 System.out.println(allStations.get(0).getName());
                 System.out.println(mForecasts.get(0).getFtime());
                 System.out.println(mTripList.get(0).getName());
-                //System.out.println(mTextForecast.getTextNextDays().getDescription().getDescription());
 
                 //initializing fake data // todo remove
                 transport.add(0,"driving");
                 transport.add(1, "walking");
-
                 places.add(0, "Reykjavík");
                 places.add(1, "Akureyri");
                 places.add(2, "Höfn");
-
                 weatherStations.add(allStations.get(0));
                 weatherStations.add(allStations.get(1));
-
                 weatherForecast.add(mForecasts.get(1));
-
                 trip.setFinish(finish);
                 trip.setStart(start);
                 trip.setName(tripName);
@@ -133,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 trip.setWeatherForecasts(weatherForecast);
                 trip.setWeatherStations(weatherStations);
 
-                //setNewTrip(trip);
                 mMethodsAPI.setTrip(trip);
 
                 System.out.println(allStations.get(0).getLatLng());
@@ -142,15 +136,17 @@ public class MainActivity extends AppCompatActivity {
                 List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
                 System.out.println(allStationsLatLng);
 
+                /* MAPS ACTIVATION EXAMPLE
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("allStations", new ArrayList<WeatherStation>(allStations));
                 intent.putExtras(bundle);
                 startActivity(intent);
+                */
             }
         });
 
-        initButton.setOnClickListener(new View.OnClickListener() {
+        viewAllTripsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mTripList = mMethodsAPI.getTripList();
@@ -185,91 +181,4 @@ public class MainActivity extends AppCompatActivity {
 
         initRecyclerView();
     }
-
-
-    /*
-    private void setNewTrip(Trip trip) {
-        Call<Trip> call = stillaAPI.saveTrip(trip);
-        call.enqueue(new Callback<Trip>() {
-            @Override
-            public void onResponse(Call<Trip> call, Response<Trip> response) {
-                System.out.println("success" + response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Trip> call, Throwable t) {
-                System.out.println("failure: " + t);
-            }
-        });
-    }
-
-    private void getAllTrips() {
-        Call<List<Trip>> call = stillaAPI.getAllTrips();
-        call.enqueue(new Callback<List<Trip>>() {
-            @Override
-            public void onResponse(Call<List<Trip>> call, Response<List<Trip>> response) {
-                mTripList.addAll(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<Trip>> call, Throwable t) {
-                System.out.println("failure: " + t + call);
-            }
-        });
-    }
-
-    private void getAllWeatherStations() {
-        Call<List<WeatherStation>> call = stillaAPI.getAllStations();
-        call.enqueue(new Callback<List<WeatherStation>>() {
-            @Override
-            public void onResponse(Call<List<WeatherStation>> call, Response<List<WeatherStation>> response) {
-                if(response.isSuccessful()) {
-                    allStations.addAll(response.body());
-                    System.out.println("found all weather stations");
-                } else {
-                    System.out.println("found no weather stations");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<WeatherStation>> call, Throwable t) {
-                System.out.println("failure for weatherstations " + t);
-            }
-        });
-
-    }
-
-    private void getTextForecast() {
-        Call<TextForecast> call = stillaAPI.getWeatherTextNextDays();
-        call.enqueue(new Callback<TextForecast>() {
-            @Override
-            public void onResponse(Call<TextForecast> call, Response<TextForecast> response) {
-                mTextForecast = response.body();
-            }
-            @Override
-            public void onFailure(Call<TextForecast> call, Throwable t) {
-                System.out.println("failure " + t);
-            }
-        });
-    }
-
-    private void getForecasts() {
-        Call<Forecasts> call = stillaAPI.getWeatherForStationId(OP_W,TYPE,LANG,VIEW,StationId,params);
-        call.enqueue(new Callback<Forecasts>() {
-            @Override
-            public void onResponse(Call<Forecasts> call, Response<Forecasts> response) {
-                Forecasts temp = new Forecasts();
-                temp = response.body();
-
-                mForecasts.addAll(temp.getStation().getForecast());
-            }
-
-            @Override
-            public void onFailure(Call<Forecasts> call, Throwable t) {
-                System.out.println("failure " + t);
-            }
-        });
-    }
-    */
-
 }

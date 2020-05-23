@@ -3,8 +3,19 @@
     <string name="punchline">Stillir þig að stilltu veðri</string>
     <string name="title_activity_maps">Map</string>
 
-    <!-- TAKKAR -->
+    <!-- BUTTONS -->
 
     <string name="add_new_trip">Ný Ferð</string>
     <string name="vew_all_trips">Allar Ferðir</string>
+    
+    <!-- NEW TRIP THINGS -->
+    
+    <string name="trip_name">Nafn ferðar</string>
+    <string name="trip_start">Upphafstími ferðar (dd-mm-yyyy)</string>
+    <string name="trip_end">Lokatími ferðar (dd-mm-yyyy)</string>
+    <string name="trip_transportation">Ferðamáti</string>
+    <string name="trip_destinations">Áfangastaðir (aðskilja með kommu)</string>
+    <string name="spinner_hint_transport">Ferðamáti</string>
+    <string name="save_new_trip">Vista ferð</string>
+
 </resources>

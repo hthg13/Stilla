@@ -3,6 +3,8 @@ package com.example.stilla_app.Data.Model.MapsRelated;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -49,6 +51,11 @@ public class Utils {
 
     public static double haversin(double val) {
         return Math.pow(Math.sin(val / 2), 2);
+    }
+
+    public static ArrayList<WeatherStation> findWeatherStationsOnRoad(ArrayList<String> places, ArrayList<WeatherStation> allStations) {
+
+        return null;
     }
 
 }
