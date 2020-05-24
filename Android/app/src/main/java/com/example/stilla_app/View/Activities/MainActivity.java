@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.appcompat.app.ActionBar;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private List<WeatherStation> allStations = new ArrayList<>();
     private List<Forecast> mForecasts = new ArrayList<>();
     private List<Trip> mTripList = new ArrayList<>();
+    private List<Trip> mTripListAfterInitialCall = new ArrayList<>();
     private TextForecast mTextForecast;
 
     //private String OP_W = "xml";
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mTripNames = new ArrayList<>();
     private ArrayList<String> mTripStarts = new ArrayList<>();
     private ArrayList<String> mTripEnds = new ArrayList<>();
+    private ArrayList<Long> mTripIds = new ArrayList<>();
 
     // view things
     private Button createTripButton;
@@ -85,18 +88,22 @@ public class MainActivity extends AppCompatActivity {
         createTripButton = (Button) findViewById(R.id.button_new_trip);
         viewAllTripsButton = (Button) findViewById(R.id.button_show_all_trips);
 
-        mTripList = mMethodsAPI.getTripList();
-        initListItems(mTripList);
+        mTripList.clear();
+        mTripListAfterInitialCall.clear();
 
-        //stillaAPI = StillaClient.getStillaClient().create(StillaAPI.class); //do not remove
-        //getAllWeatherStations(); // initialize the allstations private variable list
+        // initialize api calls
         allStations = mMethodsAPI.getAllStations();
-        //getAllTrips();
-
-
-        //stillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class); //do not remove
-        //getForecasts();
         mForecasts = mMethodsAPI.getForecasts(StationId, params);
+        mTripListAfterInitialCall = mMethodsAPI.getTripList();
+
+        // initialize recycler view
+        Bundle bundle = getIntent().getExtras();
+        mTripList = bundle.getParcelableArrayList("allTrips");
+        if (mTripList.size() == 0) {
+            Toast toast = Toast.makeText(getApplicationContext(),"Þú átt engar ferðir", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        initListItems(mTripList);
 
         createTripButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,9 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
                 // TODO REMOVE ALL BELOW THIS LINE ----------------------------------------------------------------------------------
 
+                /*
                 System.out.println(allStations.get(0).getName());
                 System.out.println(mForecasts.get(0).getFtime());
-                System.out.println(mTripList.get(0).getName());
+                //System.out.println(mTripList.get(0).getName());
 
                 //initializing fake data // todo remove
                 transport.add(0,"driving");
@@ -129,12 +137,15 @@ public class MainActivity extends AppCompatActivity {
                 trip.setWeatherStations(weatherStations);
 
                 mMethodsAPI.setTrip(trip);
-
+                */
+                /*
                 System.out.println(allStations.get(0).getLatLng());
                 List<LatLng> latLngList = mTripList.get(0).getAllStationCoordinates();
                 System.out.println(latLngList);
                 List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
                 System.out.println(allStationsLatLng);
+
+                 */
 
                 /* MAPS ACTIVATION EXAMPLE
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
@@ -149,8 +160,7 @@ public class MainActivity extends AppCompatActivity {
         viewAllTripsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTripList = mMethodsAPI.getTripList();
-                initListItems(mTripList);
+                initListItems(mTripListAfterInitialCall);
             }
         });
     }
@@ -159,25 +169,33 @@ public class MainActivity extends AppCompatActivity {
      * HELPER METHODS
      */
 
-    public void initRecyclerView() {
+    public void initRecyclerView(List<Trip> tripsList) {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter_Main adapter = new RecyclerViewAdapter_Main(mTripNames,mTripStarts,mTripEnds,this);
+        RecyclerViewAdapter_Main adapter = new RecyclerViewAdapter_Main(mTripNames,mTripStarts,mTripEnds,mTripIds,tripsList,this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter.notifyDataSetChanged();
     }
 
     public void initListItems(List<Trip> tripsList) {
         int n = tripsList.size();
 
+        mTripNames.clear();
+        mTripStarts.clear();
+        mTripEnds.clear();
+        mTripIds.clear();
+
         for (int i=0; i<n; i++) {
             String currentName = tripsList.get(i).getName();
             String currentStart = tripsList.get(i).getStart();
             String currentEnd = tripsList.get(i).getFinish();
+            long currentid = tripsList.get(i).getId();
 
             mTripNames.add(currentName);
             mTripStarts.add(currentStart);
             mTripEnds.add(currentEnd);
+            mTripIds.add(currentid);
         }
-        initRecyclerView();
+        initRecyclerView(tripsList);
     }
 }

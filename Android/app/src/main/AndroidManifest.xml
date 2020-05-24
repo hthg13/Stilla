@@ -20,7 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".View.Activities.TripForecastActivity"></activity>
-        <activity android:name=".View.Activities.OptionActivity" />
+        <activity android:name=".View.Activities.OptionActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".View.Activities.ForecastActivity" />
         <activity android:name=".View.Activities.TripActivity" />
         <!--
@@ -39,11 +45,7 @@
             android:name=".View.Activities.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".View.Activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".Data.Extras.xmlMapper" />
     </application>

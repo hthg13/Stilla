@@ -1,13 +1,17 @@
 package com.example.stilla_app.Data.Model.TripRelated;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 @Root(strict = false)
-public class Forecast {
+public class Forecast implements Parcelable {
 
     @JsonProperty(required = false)
     private long id;
@@ -56,6 +60,15 @@ public class Forecast {
     @JsonAlias({"R", "r"})
     @Element(name = "R", required = false)
     private String R;
+
+    @JsonIgnore
+    private String destinationName;
+
+    @JsonIgnore
+    private String weatherStationName;
+
+    @JsonIgnore
+    private long weatherStationId;
 
     public Forecast() {
     }
@@ -131,4 +144,83 @@ public class Forecast {
     public void setR(String r) {
         R = r;
     }
+
+
+    @JsonIgnore
+    public String getDestinationName() {
+        return destinationName;
+    }
+
+    @JsonIgnore
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
+    }
+
+    @JsonIgnore
+    public String getWeatherStationName() {
+        return weatherStationName;
+    }
+
+    @JsonIgnore
+    public void setWeatherStationName(String weatherStationName) {
+        this.weatherStationName = weatherStationName;
+    }
+
+    @JsonIgnore
+    public long getWeatherStationId() {
+        return weatherStationId;
+    }
+
+    @JsonIgnore
+    public void setWeatherStationId(long weatherStationId) {
+        this.weatherStationId = weatherStationId;
+    }
+
+    @JsonIgnore
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @JsonIgnore
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(ftime);
+        dest.writeInt(F);
+        dest.writeString(D);
+        dest.writeInt(T);
+        dest.writeString(W);
+        dest.writeString(V);
+        dest.writeString(N);
+        dest.writeString(TD);
+        dest.writeString(R);
+    }
+
+    @JsonIgnore
+    protected Forecast(Parcel in) {
+        id = in.readLong();
+        ftime = in.readString();
+        F = in.readInt();
+        D = in.readString();
+        T = in.readInt();
+        W = in.readString();
+        V = in.readString();
+        N = in.readString();
+        TD = in.readString();
+        R = in.readString();
+    }
+
+    @JsonIgnore
+    public static final Creator<Forecast> CREATOR = new Creator<Forecast>() {
+        @Override
+        public Forecast createFromParcel(Parcel in) {
+            return new Forecast(in);
+        }
+
+        @Override
+        public Forecast[] newArray(int size) {
+            return new Forecast[size];
+        }
+    };
 }

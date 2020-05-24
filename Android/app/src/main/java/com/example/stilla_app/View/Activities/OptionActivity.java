@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
@@ -41,17 +42,18 @@ public class OptionActivity extends AppCompatActivity {
         actionBar.setLogo(R.mipmap.ic_stilla_logo_and_name_round);
         actionBar.setDisplayUseLogoEnabled(true);
 
+        allTrips = mMethodsAPI.getTripList();
+
         mButtonAllTrips = findViewById(R.id.button_all_trips);
         mButtonNewTrip = findViewById(R.id.button_new_trip);
 
         mButtonAllTrips.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ArrayList<Trip> tripList = new ArrayList<>(mMethodsAPI.getTripList());
                 Intent intent = new Intent(OptionActivity.this, MainActivity.class);
-                //Bundle bundle = new Bundle();
-                //bundle.putParcelableArrayList("allTrips", tripList);
-                //intent.putExtras(bundle);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("allTrips", new ArrayList<>(allTrips));
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });

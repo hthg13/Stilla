@@ -87,6 +87,8 @@ public class MethodsAPI {
         call.enqueue(new Callback<List<Trip>>() {
             @Override
             public void onResponse(Call<List<Trip>> call, Response<List<Trip>> response) {
+                System.out.println("found all the trips");
+                mTripList.clear();
                 mTripList.addAll(response.body());
             }
 

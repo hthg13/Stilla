@@ -12,30 +12,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-//@JsonRootName(value = "station")
 public class WeatherStation implements Parcelable {
-    /*@JsonProperty(value = "Nafn", required = false)
-    private String name;
-    @JsonProperty(value = "Tegund", required = false)
-    private String type;
-    @JsonProperty(value = "Stöðvanúmer", required = false)
-    private long id;
-    @JsonProperty(value = "WMO-númer", required = false)
-    private String WMO_number;
-    @JsonProperty(value = "Skammstöfun", required = false)
-    private String shortName;
-    @JsonProperty(value = "Spásvæði", required = false)
-    private String forecastArea;
-    @JsonProperty(value = "Staðsetning", required = false)
-    private String coordinates;
-    @JsonProperty(value = "Hæð yfir sjó", required = false)
-    private String hightOverSea;
-    @JsonProperty(value = "Upphaf veðurathuguna", required = false)
-    private String startOfMeasuring;
-    @JsonProperty(value = "Eigandi stöðvar", required = false)
-    private String owner;
 
-     */
     @JsonProperty(required = false)
     @JsonAlias({"Nafn","name","nafn"})
     private String name;

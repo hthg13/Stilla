@@ -44,6 +44,7 @@ public class TripActivity extends AppCompatActivity implements
 
     List<WeatherStation> mAllStations = new ArrayList<>();
     List<Forecast> mForecasts = new ArrayList<>();
+    private List<Trip> allTrips = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class TripActivity extends AppCompatActivity implements
 
         mAllStations = mMethodsAPI.getAllStations();
         mForecasts = mMethodsAPI.getForecasts(1, "F;D;T;W;V;N;TD;R");
+        allTrips = mMethodsAPI.getTripList();
 
         Button buttonSaveTrip = (Button) findViewById(R.id.button_save_new_trip);
 
@@ -184,7 +186,15 @@ public class TripActivity extends AppCompatActivity implements
 
                 transport.add(getTrip_transportation());
 
-                if (allOK) createNewTrip(getTrip_name(), getTrip_start(), getTrip_end(), getList_trip_destinations(), transport, input_notify.isChecked());
+                if (allOK) {
+                    createNewTrip(getTrip_name(), getTrip_start(), getTrip_end(), getList_trip_destinations(), transport, input_notify.isChecked());
+
+                    Intent intent = new Intent(TripActivity.this, MainActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("allTrips", new ArrayList<>(allTrips));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
             }
         });
     }

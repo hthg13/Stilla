@@ -1,19 +1,23 @@
 package com.example.stilla_app.View.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.R;
+import com.example.stilla_app.View.Activities.TripForecastActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerViewAdapter_Main.ViewHolder> {
 
@@ -22,14 +26,38 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
     private ArrayList<String> mTripNames = new ArrayList<>();
     private ArrayList<String> mTripStarts = new ArrayList<>();
     private ArrayList<String> mTripFinishes = new ArrayList<>();
+    private ArrayList<Long> mTripIds = new ArrayList<>();
+    private List<Trip> mAllTrips = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter_Main(ArrayList<String> tripNames, ArrayList<String> tripStarts, ArrayList<String> tripFinishes, Context context) {
+
+    public RecyclerViewAdapter_Main(ArrayList<String> tripNames, ArrayList<String> tripStarts, ArrayList<String> tripFinishes, ArrayList<Long> tripIds, List<Trip> allTrips, Context context) {
+        System.out.println("getItemCount1: " + mTripNames.size());
+
+        mTripFinishes.clear();
+        mTripStarts.clear();
+        mTripNames.clear();
+        mAllTrips.clear();
+        mTripIds.clear();
+
+        System.out.println("getItemCount2: " + mTripNames.size());
+
+        mTripNames = tripNames;
+        mTripStarts = tripStarts;
+        mTripFinishes = tripFinishes;
+        mTripIds = tripIds;
+        mAllTrips = allTrips;
+        mContext = context;
+
+        System.out.println("getItemCount3: " + mTripNames.size());
+    }
+
+    /*public RecyclerViewAdapter_Main(ArrayList<String> tripNames, ArrayList<String> tripStarts, ArrayList<String> tripFinishes, ArrayList<Long> tripIds, List<Trip> tripsList, Context context) {
         mTripNames = tripNames;
         mTripStarts = tripStarts;
         mTripFinishes = tripFinishes;
         mContext = context;
-    }
+    }*/
 
     @NonNull
     @Override
@@ -50,13 +78,26 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
         holder.mainParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClik: clicked on: " + mTripNames.get(position));
+                Log.d(TAG, "onClik: clicked on: " + mTripNames.get(position) + " position: " + position);
+
+                //Intent intent = new Intent(v.getContext(), TripForecastActivity.class);
+                //intent.putExtra("positionOfTrip", position);
+                //mContext.startActivity(intent);
+                Trip clickedTrip = mAllTrips.get(position);
+
+                Intent intent = new Intent(v.getContext(), TripForecastActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("clickedTrip", clickedTrip);
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
+
             }
         });
     }
 
     @Override
     public int getItemCount() {
+        System.out.println("getItemCount4: " + mTripNames.size());
         return mTripNames.size();
     }
 

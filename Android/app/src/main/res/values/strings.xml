@@ -18,4 +18,16 @@
     <string name="spinner_hint_transport">Ferðamáti</string>
     <string name="save_new_trip">Vista ferð</string>
 
+    <!-- WEATHER THINGS -->
+    <string name="f">Vindhraði</string>
+    <string name="t">Hiti (°C)</string>
+    <string name="d">Vindstefna</string>
+    <string name="w">Veðurlýsing</string>
+    <string name="n">Skýjahula (%)</string>
+    <string name="r">Úrkoma (mm/klst)</string>
+    <string name="td">Daggarmark (°C)</string>
+    <string name="time">Dagsetning/tími</string>
+    <string name="dest">Áfangastaður</string>
+    <string name="stationName">Nafn stöðvar</string>
+    <string name="stationArea">Svæði stöðvar</string>
 </resources>

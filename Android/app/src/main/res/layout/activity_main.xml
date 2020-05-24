@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:background="#B3D29F0F"
-                android:text="@string/vew_all_trips"
+                android:text="Uppfæra lista"
                 android:textColor="#FFFFFF"/>
 
         </LinearLayout>

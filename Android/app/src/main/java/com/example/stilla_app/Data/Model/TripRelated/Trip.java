@@ -139,6 +139,7 @@ public class Trip implements Parcelable{
         dest.writeByte((byte) (this.notify ? 1 : 0));
         dest.writeStringList(this.places);
         dest.writeTypedList(this.weatherStation);
+        dest.writeTypedList(this.weatherForecast);
     }
 
     @JsonIgnore
@@ -151,6 +152,7 @@ public class Trip implements Parcelable{
         this.notify = in.readByte() != 0;
         this.places = in.createStringArrayList();
         this.weatherStation = in.createTypedArrayList(WeatherStation.CREATOR);
+        this.weatherForecast = in.createTypedArrayList(Forecast.CREATOR);
     }
 
     @JsonIgnore
