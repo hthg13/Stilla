@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import com.example.stilla_app.Data.Model.MapsRelated.Directions;
 import com.example.stilla_app.Data.Model.MapsRelated.Location;
 import com.example.stilla_app.Data.Model.MapsRelated.RouteBoxer;
+import com.example.stilla_app.Data.Model.Singeltons.AllStationsBase;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
@@ -60,8 +61,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Bundle bundle = getIntent().getExtras();
-        allStations = bundle.getParcelableArrayList("allStations");
+        allStations = AllStationsBase.get().getAllStations();
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(64.1465944, -21.9426321);
@@ -70,10 +70,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(sydney)      // Sets the center of the map to location user
-                .zoom(5)                   // Sets the zoom
-                //.bearing(90)                // Sets the orientation of the camera to east
-                //.tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                .build();                   // Creates a CameraPosition from the builder
+                .zoom(5)             // Sets the zoom
+                .build();            // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);

@@ -59,8 +59,6 @@ public class TripForecastActivity extends AppCompatActivity {
         notifications = findViewById(R.id.notifications);
         viewMapButton = findViewById(R.id.view_on_map);
 
-        mAllStations = mMethodsAPI.getAllStations();
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Ferðin þín");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -84,9 +82,6 @@ public class TripForecastActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TripForecastActivity.this, MapsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("allStations", new ArrayList<WeatherStation>(mAllStations));
-                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });

@@ -2,37 +2,29 @@ package com.example.stilla_app.Data.Model.TripRelated;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
+import android.widget.Toast;
 import com.example.stilla_app.Data.Model.MapsRelated.Directions;
 import com.example.stilla_app.Data.Model.MapsRelated.RouteBoxer;
+import com.example.stilla_app.Data.Model.Singeltons.AllStationsBase;
+import com.example.stilla_app.Data.Model.Singeltons.AllTripsBase;
+import com.example.stilla_app.Data.Model.Singeltons.CalculatedTrip;
 import com.example.stilla_app.Data.Network.MethodsAPI;
 import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
 import com.example.stilla_app.View.Activities.MainActivity;
-import com.example.stilla_app.View.Activities.TripActivity;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.app.Activity.RESULT_OK;
 import static com.example.stilla_app.Data.Model.MapsRelated.Utils.getDistance;
 import static com.example.stilla_app.Data.Model.TripRelated.WeatherStation.getAllStationLatLng;
 
 public class CreateTripAlgo extends IntentService {
 
-    private StillaClient mStillaClient;
     private StillaAPI mGoogleApi;
     private StillaAPI mStillaAPI;
     private List<WeatherStation> allStations = new ArrayList<>();
@@ -43,23 +35,17 @@ public class CreateTripAlgo extends IntentService {
     private List<RouteBoxer.LatLng> mRboxerLatLnglistAll = new ArrayList<>();
     private List<LatLng> mGoogleLatLngListAll = new ArrayList<>();
     private RouteBoxer mRouteBoxer = new RouteBoxer();
-    private List<Polyline> mPolylinesList = new ArrayList<>();
     private List<LatLng> mAllStationsLatLng = new ArrayList<>();
-    private List<WeatherStation> mAllStationsToUse = new ArrayList<WeatherStation>();
+    private List<WeatherStation> mAllStationsToUse = new ArrayList<>();
     private List<Forecast> mAllForecasts = new ArrayList<>();
-    private List<Trip> mAllTrips = new ArrayList<>();
-
-    String GOOGLE_API_KEY = "AIzaSyDe762ykwpo7NedQysCHa0KtB3-WyZQAjE";
+    private String GOOGLE_API_KEY = "AIzaSyDe762ykwpo7NedQysCHa0KtB3-WyZQAjE";
 
     public CreateTripAlgo() {
         super("CreateTripAlgo");
     }
 
-
     @Override
     protected void onHandleIntent(Intent intent) {
-        System.out.println("******************************HELLOOOOOO***********************************");
-
         String params = "F;D;T;W;V;N;TD;R";
         String OP_W = "xml";
         String TYPE = "forec";
@@ -68,23 +54,12 @@ public class CreateTripAlgo extends IntentService {
 
         mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);
 
-        Trip trip = new Trip();
-        List<WeatherStation> tripStations = new ArrayList<>();
-        List<Forecast> tripForecast = new ArrayList<>();
+        Trip trip = CalculatedTrip.get().getTrip();
 
-        // set the basics that we already have
-        trip.setName(intent.getStringExtra("tripName"));
-        trip.setStart(intent.getStringExtra("tripStart"));
-        trip.setFinish(intent.getStringExtra("tripFinish"));
-        trip.setTransport(intent.getStringArrayListExtra("tripTransportation"));
-        trip.setPlaces(intent.getStringArrayListExtra("tripDestinations"));
-        trip.setNotify(intent.getBooleanExtra("tripNotify", false));
+        ArrayList<String> destinations = new ArrayList<>(trip.getPlaces());
+        allStations = AllStationsBase.get().getAllStations();
 
-        ArrayList<String> destinations = intent.getStringArrayListExtra("tripDestinations");
-        allStations = intent.getParcelableArrayListExtra("allStations");
-        mAllTrips = intent.getParcelableArrayListExtra("allTrips");
-
-        // for each of the "legs" between destinations calculate...
+        // for each of the "legs" between destinations calculate
         for (int i = 0; i < destinations.size() - 1; i++) {
             final int j = i;
 
@@ -159,9 +134,7 @@ public class CreateTripAlgo extends IntentService {
             System.out.println("UPPHAFSSTAÐUR: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address);
             System.out.println("TÍMI MILLI STAÐA: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).duration.getText());
             System.out.println("LOKASTAÐUR: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
-            System.out.println();
             System.out.println("FJÖLDI VEÐURSTÖÐVA: " + mAllStationsToUse.size());
-            System.out.println("HEILDARFJÖLDI VEÐURSTÖÐVA: " + allStations.size());
             System.out.println("HEILDARFJÖLDI VEÐURSPÁA: " + mAllForecasts.size());
             System.out.println("*****************************************************************");
         }
@@ -169,18 +142,32 @@ public class CreateTripAlgo extends IntentService {
         // finish setting up the trip
         trip.setWeatherStations(mAllStationsToUse);
         trip.setWeatherForecasts(mAllForecasts);
+        trip.setGoogleDirectionList(new ArrayList<>(mGoogleLatLngListAll));
 
-        mMethodsAPI.setTrip(trip);
-        mAllTrips = mMethodsAPI.getTripList();
+        // set the trip to the singelton class calculated trip for later use
+        CalculatedTrip.get().setTrip(trip);
+        setNewTrip(trip);
 
-        /*
+        // start activity MainActivity and add a flag because this class is not an activity
         Intent intent2 = new Intent(this, MainActivity.class);
         intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent2.putExtra("trip", trip);
-        intent2.putParcelableArrayListExtra("googleLine", new ArrayList<>(mGoogleLatLngListAll));
-        intent2.putParcelableArrayListExtra("allTrips", new ArrayList<>(mAllTrips));
         startActivity(intent2);
+    }
 
-         */
+    private void setNewTrip(Trip trip) {
+        mStillaAPI = StillaClient.getStillaClient().create(StillaAPI.class);
+        Call<Trip> call = mStillaAPI.saveTrip(trip);
+        call.enqueue(new Callback<Trip>() {
+            @Override
+            public void onResponse(Call<Trip> call, Response<Trip> response) {
+                Toast.makeText(getApplicationContext(),"Tókst að vista ferðina",Toast.LENGTH_LONG).show();
+                AllTripsBase.get().setTripsList(new ArrayList<>(mMethodsAPI.getTripList()));
+            }
+
+            @Override
+            public void onFailure(Call<Trip> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Tókst því miður ekki að vista ferðina, reyndu aftur",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

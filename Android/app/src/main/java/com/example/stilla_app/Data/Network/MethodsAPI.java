@@ -1,5 +1,8 @@
 package com.example.stilla_app.Data.Network;
 
+import android.widget.Toast;
+
+import com.example.stilla_app.Data.Model.Singeltons.AllTripsBase;
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Forecasts;
 import com.example.stilla_app.Data.Model.TripRelated.TextForecast;
@@ -90,6 +93,7 @@ public class MethodsAPI {
                 System.out.println("found all the trips");
                 mTripList.clear();
                 mTripList.addAll(response.body());
+                AllTripsBase.get().setTripsList(new ArrayList<>(mTripList));
             }
 
             @Override

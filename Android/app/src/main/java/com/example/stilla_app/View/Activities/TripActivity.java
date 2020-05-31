@@ -19,6 +19,8 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.stilla_app.Data.Model.Singeltons.AllTripsBase;
+import com.example.stilla_app.Data.Model.Singeltons.CalculatedTrip;
 import com.example.stilla_app.Data.Model.TripRelated.CreateTripAlgo;
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
@@ -243,13 +245,8 @@ public class TripActivity extends AppCompatActivity implements
     private void createNewTrip(String name, String start, String finish, ArrayList<String> destinations, ArrayList<String> transportation, boolean notify) {
         // save the trip that the user just inserted and calculate the weather forecast + directions
         Intent intent = new Intent(TripActivity.this, CreateTripAlgo.class);
-        intent.putExtra("tripName", name);
-        intent.putExtra("tripStart", start);
-        intent.putExtra("tripFinish", finish);
-        intent.putExtra("tripDestinations", destinations);
-        intent.putExtra("tripTransportation", transportation);
-        intent.putExtra("tripNotify", notify);
-        intent.putParcelableArrayListExtra("allTrips", new ArrayList<>(allTrips));
+        Trip trip = new Trip(name,start,finish,destinations,transportation,notify);
+        CalculatedTrip.get().setTrip(trip);
         intent.putParcelableArrayListExtra("allStations", new ArrayList<>(mAllStations));
         startService(intent);
     }

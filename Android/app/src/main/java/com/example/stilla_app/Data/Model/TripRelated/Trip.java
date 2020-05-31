@@ -34,10 +34,19 @@ public class Trip implements Parcelable {
     @ElementList(required = false)
     public List<Forecast> weatherForecast;
 
+    @JsonIgnore
+    public ArrayList<LatLng> googleDirectionList;
+
     public Trip() {
     }
 
     public Trip(String name, String start, String finish, ArrayList<String> destinations, ArrayList<String> transportation, boolean notify) {
+        this.name = name;
+        this.start = start;
+        this.finish = finish;
+        this.places = destinations;
+        this.transport = transportation;
+        this.notify = notify;
     }
 
     public long getId() {
@@ -110,6 +119,16 @@ public class Trip implements Parcelable {
 
     public void setWeatherForecasts(List<Forecast> weatherForecasts) {
         this.weatherForecast = weatherForecasts;
+    }
+
+    @JsonIgnore
+    public ArrayList<LatLng> getGoogleDirectionList() {
+        return googleDirectionList;
+    }
+
+    @JsonIgnore
+    public void setGoogleDirectionList(ArrayList<LatLng> googleDirectionList) {
+        this.googleDirectionList = googleDirectionList;
     }
 
     @JsonIgnore
