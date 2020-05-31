@@ -54,6 +54,17 @@ public class WeatherStation implements Parcelable {
     @JsonAlias({"Eigandi stöðvar", "owner", "eigandi stöðvar"})
     private String owner;
 
+    @JsonIgnore
+    private boolean accessable;
+
+    public boolean isAccessable() {
+        return accessable;
+    }
+
+    public void setAccessable(boolean accessable) {
+        this.accessable = accessable;
+    }
+
     public String getName() {
         return name;
     }

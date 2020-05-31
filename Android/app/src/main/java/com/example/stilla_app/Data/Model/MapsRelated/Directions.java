@@ -11,7 +11,6 @@ public class Directions {
 
     private List<Routes> routes;
 
-
     public List<Routes> getRoutes() {
         return routes;
     }
@@ -20,7 +19,8 @@ public class Directions {
         this.routes = routes;
     }
 
-    // HELPER FUNCTIONS
+
+// HELPER FUNCTIONS
 
     public List<Location> getAllLocations() {
         int n = this.routes.get(0).getLegs().get(0).getSteps().size();

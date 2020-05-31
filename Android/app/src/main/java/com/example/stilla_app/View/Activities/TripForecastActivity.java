@@ -1,20 +1,20 @@
 package com.example.stilla_app.View.Activities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
+import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.MethodsAPI;
 import com.example.stilla_app.R;
 import com.example.stilla_app.View.Adapters.RecyclerViewAdaper_trip_forecast;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +28,7 @@ public class TripForecastActivity extends AppCompatActivity {
     private TextView transportation;
     private TextView destinations;
     private TextView notifications;
+    private Button viewMapButton;
 
     private ArrayList<String> mTime = new ArrayList<>();
     private ArrayList<String> mF = new ArrayList<>();
@@ -41,6 +42,7 @@ public class TripForecastActivity extends AppCompatActivity {
 
     private ArrayList<String> mStationName = new ArrayList<>();
     private ArrayList<String> mStaionArea = new ArrayList<>();
+    private List<WeatherStation> mAllStations = new ArrayList<>();
 
     // station name, destination name
 
@@ -55,6 +57,9 @@ public class TripForecastActivity extends AppCompatActivity {
         transportation = findViewById(R.id.transport);
         destinations = findViewById(R.id.destinations);
         notifications = findViewById(R.id.notifications);
+        viewMapButton = findViewById(R.id.view_on_map);
+
+        mAllStations = mMethodsAPI.getAllStations();
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Ferðin þín");
@@ -74,6 +79,17 @@ public class TripForecastActivity extends AppCompatActivity {
         notifications.setText(booleanToText(clickedTrip.isNotify()));
 
         initListItems(clickedTrip.weatherForecast);
+
+        viewMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TripForecastActivity.this, MapsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("allStations", new ArrayList<WeatherStation>(mAllStations));
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initListItems(List<Forecast> weatherForecasts) {

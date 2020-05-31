@@ -57,5 +57,13 @@ public class OptionActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mButtonNewTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OptionActivity.this, TripActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

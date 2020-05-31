@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         viewAllTripsButton = (Button) findViewById(R.id.button_show_all_trips);
 
         mTripList.clear();
+        mTripList = mMethodsAPI.getTripList();
         mTripListAfterInitialCall.clear();
 
         // initialize api calls
@@ -97,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
         mTripListAfterInitialCall = mMethodsAPI.getTripList();
 
         // initialize recycler view
-        Bundle bundle = getIntent().getExtras();
-        mTripList = bundle.getParcelableArrayList("allTrips");
-        if (mTripList.size() == 0) {
-            Toast toast = Toast.makeText(getApplicationContext(),"Þú átt engar ferðir", Toast.LENGTH_SHORT);
+        Intent intent = getIntent();
+        //Bundle bundle = getIntent().getExtras();
+        //mTripList = bundle.getParcelableArrayList("allTrips");
+        mTripList = intent.getParcelableArrayListExtra("allTrips");
+        if (mTripList.size() == 0 || mTripList == null) {
+            Toast toast = Toast.makeText(getApplicationContext(),"Þú hefur engar skráðar ferðir", Toast.LENGTH_LONG);
             toast.show();
         }
         initListItems(mTripList);
@@ -110,42 +113,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, TripActivity.class);
                 startActivity(intent);
-
-                // TODO REMOVE ALL BELOW THIS LINE ----------------------------------------------------------------------------------
-
-                /*
-                System.out.println(allStations.get(0).getName());
-                System.out.println(mForecasts.get(0).getFtime());
-                //System.out.println(mTripList.get(0).getName());
-
-                //initializing fake data // todo remove
-                transport.add(0,"driving");
-                transport.add(1, "walking");
-                places.add(0, "Reykjavík");
-                places.add(1, "Akureyri");
-                places.add(2, "Höfn");
-                weatherStations.add(allStations.get(0));
-                weatherStations.add(allStations.get(1));
-                weatherForecast.add(mForecasts.get(1));
-                trip.setFinish(finish);
-                trip.setStart(start);
-                trip.setName(tripName);
-                trip.setNotify(notify);
-                trip.setPlaces(places);
-                trip.setTransport(transport);
-                trip.setWeatherForecasts(weatherForecast);
-                trip.setWeatherStations(weatherStations);
-
-                mMethodsAPI.setTrip(trip);
-                */
-                /*
-                System.out.println(allStations.get(0).getLatLng());
-                List<LatLng> latLngList = mTripList.get(0).getAllStationCoordinates();
-                System.out.println(latLngList);
-                List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
-                System.out.println(allStationsLatLng);
-
-                 */
 
                 /* MAPS ACTIVATION EXAMPLE
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
@@ -160,6 +127,11 @@ public class MainActivity extends AppCompatActivity {
         viewAllTripsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (mTripList.size() == 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Þú hefur engar skráðar ferðir", Toast.LENGTH_LONG);
+                    toast.show();
+                }
                 initListItems(mTripListAfterInitialCall);
             }
         });
@@ -173,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         RecyclerViewAdapter_Main adapter = new RecyclerViewAdapter_Main(mTripNames,mTripStarts,mTripEnds,mTripIds,tripsList,this);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         adapter.notifyDataSetChanged();
     }
 

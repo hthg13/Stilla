@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Duration {
 
     private String text;
-    private String value;
+    private int value;
 
     public String getText() {
         return text;
@@ -16,11 +16,11 @@ public class Duration {
         this.text = text;
     }
 
-    public String getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(int value) {
         this.value = value;
     }
 }

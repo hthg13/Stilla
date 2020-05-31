@@ -29,6 +29,7 @@
         </activity>
         <activity android:name=".View.Activities.ForecastActivity" />
         <activity android:name=".View.Activities.TripActivity" />
+        <service android:name=".Data.Model.TripRelated.CreateTripAlgo" android:exported="false"></service>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

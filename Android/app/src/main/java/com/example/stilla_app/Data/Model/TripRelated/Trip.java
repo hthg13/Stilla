@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Root
-public class Trip implements Parcelable{
+public class Trip implements Parcelable {
     @Element
     private long id;
     @Element
@@ -35,6 +35,9 @@ public class Trip implements Parcelable{
     public List<Forecast> weatherForecast;
 
     public Trip() {
+    }
+
+    public Trip(String name, String start, String finish, ArrayList<String> destinations, ArrayList<String> transportation, boolean notify) {
     }
 
     public long getId() {

@@ -137,7 +137,7 @@ public class MethodsAPI {
         call.enqueue(new Callback<Trip>() {
             @Override
             public void onResponse(Call<Trip> call, Response<Trip> response) {
-                System.out.println("success" + response.body());
+                System.out.println("SUCCESS THE TRIP WAS SAVED: ---------------------->" + response.body());
             }
 
             @Override

@@ -2,8 +2,12 @@ package com.example.stilla_app.View.Activities;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,11 +19,13 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.stilla_app.Data.Model.TripRelated.CreateTripAlgo;
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.MethodsAPI;
 import com.example.stilla_app.R;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -31,8 +37,10 @@ import java.util.List;
 public class TripActivity extends AppCompatActivity implements
         AdapterView.OnItemSelectedListener{
 
-    private String[] transport = {"Keyrandi", "Gangandi"};
+    BroadcastReceiver mReceiver;
+    IntentFilter filter;
 
+    private String[] transport = {"Keyrandi", "Gangandi"};
     private String trip_name;
     private String trip_start;
     private String trip_end;
@@ -51,6 +59,29 @@ public class TripActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
 
+        /*
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                System.out.println("hello reciever ========================================================================");
+
+                Trip trip = intent.getParcelableExtra("trip");
+                System.out.println(trip.getPlaces());
+
+                ArrayList<LatLng> googleLine = intent.getParcelableArrayListExtra("googleLine");
+                System.out.println(googleLine.size());
+
+                mMethodsAPI.setTrip(trip);
+            }
+        };
+
+        filter = new IntentFilter();
+        filter.addAction("com.local.receiver");
+        registerReceiver(mReceiver,filter);
+
+         */
+
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Ný Ferð");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -67,6 +98,11 @@ public class TripActivity extends AppCompatActivity implements
         TextInputEditText input_trip_start = (TextInputEditText) findViewById(R.id.textInput_trip_start);
         TextInputEditText input_trip_finish = (TextInputEditText) findViewById(R.id.textInput_trip_end);
         TextInputEditText input_trip_destinations = (TextInputEditText) findViewById(R.id.textInput_destinations);
+
+        input_trip_name.setText("Nýjustu prufuferðirnar");
+        input_trip_start.setText("today");
+        input_trip_finish.setText("tomorrow");
+        input_trip_destinations.setText("Reykjavík,Akureyri,Höfn");
 
         TextInputLayout input_trip_name_layout = (TextInputLayout) findViewById(R.id.textInput_trip_name_layout);
         TextInputLayout input_trip_start_layout = (TextInputLayout) findViewById(R.id.textInput_trip_start_layout);
@@ -149,7 +185,6 @@ public class TripActivity extends AppCompatActivity implements
             }
         });
 
-
         buttonSaveTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,12 +223,6 @@ public class TripActivity extends AppCompatActivity implements
 
                 if (allOK) {
                     createNewTrip(getTrip_name(), getTrip_start(), getTrip_end(), getList_trip_destinations(), transport, input_notify.isChecked());
-
-                    Intent intent = new Intent(TripActivity.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("allTrips", new ArrayList<>(allTrips));
-                    intent.putExtras(bundle);
-                    startActivity(intent);
                 }
             }
         });
@@ -212,48 +241,17 @@ public class TripActivity extends AppCompatActivity implements
     // HELPER FUNCTIONS ------------------------------------------------------------------------------------------------------------------------------------
 
     private void createNewTrip(String name, String start, String finish, ArrayList<String> destinations, ArrayList<String> transportation, boolean notify) {
-        System.out.println(name);
-        System.out.println(start);
-        System.out.println(finish);
-        for (int i = 0; i<destinations.size(); i++) {
-            System.out.println(destinations.get(i));
-        }
-        System.out.println(transportation);
-        System.out.println(notify);
-
-        Trip trip = new Trip();
-        List<WeatherStation> tripStations = new ArrayList<>();
-        List<Forecast> tripForecast = new ArrayList<>();
-
-        trip.setName(name);
-        trip.setStart(start);
-        trip.setFinish(finish);
-        trip.setTransport(transportation);
-        trip.setPlaces(destinations);
-        trip.setNotify(notify);
-
-        // TODO FINISH THIS METHOD
-        // TODO 1. UTILS.findWeatherStationsOnRoad(ArrayList<String> places, ArrayList<WeatherStation> allStations)
-        // TODO MEÐ IDS SÆKJA VEÐURSPÁNNA FYRIR ALLAR VEÐURSTÖÐVARNAR
-        // TODO FINNA ÚT HRAÐA OFL...
-        // TODO ... kalla í bakenda og vista ferðina eins og í main
-        // todo finna leið til þess að kalla hér í getAllStations ofl og fá niðurstöðu.
-
-        List<WeatherStation> allStations = new ArrayList<>();
-        allStations = mMethodsAPI.getAllStations();
-
-        List<Forecast> forecasts = new ArrayList<>();
-        forecasts = mMethodsAPI.getForecasts(1, "F;D;T;W;V;N;TD;R");
-
-        tripStations.add(mAllStations.get(0));
-        tripStations.add(mAllStations.get(1));
-        tripForecast.add(mForecasts.get(0));
-        tripForecast.add(mForecasts.get(1));
-
-        trip.setWeatherForecasts(tripForecast);
-        trip.setWeatherStations(tripStations);
-
-        mMethodsAPI.setTrip(trip);
+        // save the trip that the user just inserted and calculate the weather forecast + directions
+        Intent intent = new Intent(TripActivity.this, CreateTripAlgo.class);
+        intent.putExtra("tripName", name);
+        intent.putExtra("tripStart", start);
+        intent.putExtra("tripFinish", finish);
+        intent.putExtra("tripDestinations", destinations);
+        intent.putExtra("tripTransportation", transportation);
+        intent.putExtra("tripNotify", notify);
+        intent.putParcelableArrayListExtra("allTrips", new ArrayList<>(allTrips));
+        intent.putParcelableArrayListExtra("allStations", new ArrayList<>(mAllStations));
+        startService(intent);
     }
 
 
@@ -315,7 +313,6 @@ public class TripActivity extends AppCompatActivity implements
     }
 
     public void setList_trip_destinations(ArrayList<String> list_trip_destinations) {
-        System.out.println("fyrsti áfangastaður: " + list_trip_destinations.get(0));
         this.list_trip_destinations = list_trip_destinations;
     }
 }

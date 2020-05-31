@@ -11,11 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.R;
 import com.example.stilla_app.View.Activities.TripForecastActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +30,11 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
 
 
     public RecyclerViewAdapter_Main(ArrayList<String> tripNames, ArrayList<String> tripStarts, ArrayList<String> tripFinishes, ArrayList<Long> tripIds, List<Trip> allTrips, Context context) {
-        System.out.println("getItemCount1: " + mTripNames.size());
-
         mTripFinishes.clear();
         mTripStarts.clear();
         mTripNames.clear();
         mAllTrips.clear();
         mTripIds.clear();
-
-        System.out.println("getItemCount2: " + mTripNames.size());
 
         mTripNames = tripNames;
         mTripStarts = tripStarts;
@@ -48,16 +42,7 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
         mTripIds = tripIds;
         mAllTrips = allTrips;
         mContext = context;
-
-        System.out.println("getItemCount3: " + mTripNames.size());
     }
-
-    /*public RecyclerViewAdapter_Main(ArrayList<String> tripNames, ArrayList<String> tripStarts, ArrayList<String> tripFinishes, ArrayList<Long> tripIds, List<Trip> tripsList, Context context) {
-        mTripNames = tripNames;
-        mTripStarts = tripStarts;
-        mTripFinishes = tripFinishes;
-        mContext = context;
-    }*/
 
     @NonNull
     @Override
@@ -72,7 +57,7 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
         Log.d(TAG, "onBindViewHolder: called.");
 
         holder.tripName.setText(mTripNames.get(position));
-        holder.tripStart.setText(mTripNames.get(position));
+        holder.tripStart.setText(mTripStarts.get(position));
         holder.tripEnd.setText(mTripFinishes.get(position));
 
         holder.mainParentLayout.setOnClickListener(new View.OnClickListener() {
@@ -80,9 +65,6 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
             public void onClick(View v) {
                 Log.d(TAG, "onClik: clicked on: " + mTripNames.get(position) + " position: " + position);
 
-                //Intent intent = new Intent(v.getContext(), TripForecastActivity.class);
-                //intent.putExtra("positionOfTrip", position);
-                //mContext.startActivity(intent);
                 Trip clickedTrip = mAllTrips.get(position);
 
                 Intent intent = new Intent(v.getContext(), TripForecastActivity.class);
@@ -101,9 +83,6 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
         return mTripNames.size();
     }
 
-    /**
-     * holds the widgets in memory and recycles them
-     */
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tripName;
