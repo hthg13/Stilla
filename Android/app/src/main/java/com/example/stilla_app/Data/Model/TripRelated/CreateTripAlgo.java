@@ -28,6 +28,7 @@ public class CreateTripAlgo extends IntentService {
     private StillaAPI mGoogleApi;
     private StillaAPI mStillaAPI;
     private List<WeatherStation> allStations = new ArrayList<>();
+    private List<WeatherStation> allStationsAvalable = new ArrayList<>();
     private MethodsAPI mMethodsAPI = new MethodsAPI();
 
     private ArrayList<Directions> mDirections = new ArrayList<>();
@@ -55,9 +56,31 @@ public class CreateTripAlgo extends IntentService {
         mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);
 
         Trip trip = CalculatedTrip.get().getTrip();
-
         ArrayList<String> destinations = new ArrayList<>(trip.getPlaces());
         allStations = AllStationsBase.get().getAllStations();
+
+        // todo remove after debugging
+        allStations = AllStationsBase.get().getAllStations();
+        int o = allStations.size();
+        int numValidStations = 0;
+        List<WeatherStation> avalableStations = new ArrayList<>();
+        mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
+        for (int i = 0; i<o; i++) {
+            int currentStationId = (int) allStations.get(i).getId();
+            Call<Forecasts> call2 = mStillaAPI.getWeatherForStationId(OP_W, TYPE, LANG, VIEW, currentStationId, params);
+            try {
+                Forecasts forecasts = call2.execute().body();
+                if (forecasts.getStation().getErr() == null) {
+                    numValidStations = numValidStations + 1;
+                    avalableStations.add(allStations.get(i));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(numValidStations);
+        AllStationsBase.get().setAvalableStations(avalableStations);
+        allStationsAvalable = AllStationsBase.get().getAvalableStations();
 
         // for each of the "legs" between destinations calculate
         for (int i = 0; i < destinations.size() - 1; i++) {
@@ -78,39 +101,38 @@ public class CreateTripAlgo extends IntentService {
             mDurationValues.add(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).getDuration().getValue());
 
             // get all the latlng positions on the directed path, mGoogleLatLngList will be used for polyline drawing
-            mRboxerLatLnglistAll = mRouteBoxer.decodePath(mDirections.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints());
-            mGoogleLatLngListAll = mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll);
+            mRboxerLatLnglistAll = (mRouteBoxer.decodePath(mDirections.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints()));
+            mGoogleLatLngListAll.addAll(mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll));
+
+            List<LatLng> useList = mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll);
 
             // latlng of all stations avalable
-            mAllStationsLatLng = getAllStationLatLng(allStations);
+            mAllStationsLatLng = getAllStationLatLng(allStationsAvalable);
 
             // find all the stations that are within 5 km from the path
             // todo change so that if the weather stations are fiewer than 5 repeat with range larger
-            List<Double> distanceList = new ArrayList<>();
-            List<Double> distanceListLess = new ArrayList<>();
             mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
-            int m = mAllStationsLatLng.size();
-            for (int k = 0; k < m; k++) {
-                WeatherStation currentStation = allStations.get(k);
+            for (int k = 0; k < mAllStationsLatLng.size(); k++) {
+                WeatherStation currentStation = allStationsAvalable.get(k);
                 for (int l = 0; l < n; l++) {
-                    LatLng currLatLngMap = mGoogleLatLngListAll.get(l);
+                    LatLng currLatLngMap = useList.get(l);
                     double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
-                    if (distance < 10) {
-                        if (l > 0 && (mAllStationsToUse.get(i-1) != currentStation)) {
-                            distanceListLess.add(distance);
+                    if (distance < 200) {
+                        /*if (l > 0 && (mAllStationsToUse.get(i-1) != currentStation)) {
                             mAllStationsToUse.add(currentStation);
                         }
                         if (l == 0) {
-                            distanceListLess.add(distance);
                             mAllStationsToUse.add(currentStation);
                         }
+
+                         */
+                        mAllStationsToUse.add(currentStation);
                     }
-                    distanceList.add(distance);
                 }
             }
 
             // get all weather forecast for all the stations -> mAllStationsToUse
-            m = mAllStationsToUse.size();
+            int m = mAllStationsToUse.size();
             mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
             for (int t = 0; t < m; t++) {
                 int currentStationId = (int) mAllStationsToUse.get(t).getId();
@@ -119,20 +141,15 @@ public class CreateTripAlgo extends IntentService {
                     Forecasts forecasts = call2.execute().body();
                     if (forecasts.getStation().getErr() == null) {
                         for (int z=0; z<forecasts.getStation().getForecast().size(); z++) {
-                            forecasts.getStation().getForecast().get(z).setDestinationName(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address + " - " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
-                            System.out.println(forecasts.getStation().getForecast().get(z).getDestinationName());
+                            String[] startpoints = mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address.split(",");
+                            String[] endpoints = mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address.split(",");
+                            forecasts.getStation().getForecast().get(z).setStationEndpointName(startpoints[0] + " - " + endpoints[0]);
                         }
                         mAllForecasts.addAll(forecasts.getStation().getForecast());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                // set destination name to all forecasts
-                //for (int y = 0; y < mAllForecasts.size(); y++) {
-                //    mAllForecasts.get(y).setDestinationName(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address + " - " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
-                //    System.out.println(mAllForecasts.get(y).getDestinationName());
-                //}
             }
 
             System.out.println("*****************************************************************");
@@ -147,7 +164,13 @@ public class CreateTripAlgo extends IntentService {
         // finish setting up the trip
         trip.setWeatherStations(mAllStationsToUse);
         trip.setWeatherForecasts(mAllForecasts);
-        trip.setGoogleDirectionList(new ArrayList<>(mGoogleLatLngListAll));
+
+        List<String> googleLatLngListString = new ArrayList<>();
+        for (int i=0;i<mGoogleLatLngListAll.size();i++) {
+            googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
+        }
+
+        trip.setGoogleDirectionList(new ArrayList<>(googleLatLngListString));
 
         // set the trip to the singelton class calculated trip for later use
         CalculatedTrip.get().setTrip(trip);
@@ -165,6 +188,7 @@ public class CreateTripAlgo extends IntentService {
         call.enqueue(new Callback<Trip>() {
             @Override
             public void onResponse(Call<Trip> call, Response<Trip> response) {
+                Trip trip = response.body();
                 Toast.makeText(getApplicationContext(),"Tókst að vista ferðina",Toast.LENGTH_LONG).show();
                 AllTripsBase.get().setTripsList(new ArrayList<>(mMethodsAPI.getTripList()));
             }

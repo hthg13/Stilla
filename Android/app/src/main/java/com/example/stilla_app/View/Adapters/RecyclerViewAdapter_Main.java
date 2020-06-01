@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.stilla_app.Data.Model.Singeltons.CalculatedTrip;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.R;
 import com.example.stilla_app.View.Activities.TripForecastActivity;
@@ -67,10 +69,12 @@ public class RecyclerViewAdapter_Main extends RecyclerView.Adapter <RecyclerView
 
                 Trip clickedTrip = mAllTrips.get(position);
 
+                CalculatedTrip.get().setTrip(clickedTrip);
+
                 Intent intent = new Intent(v.getContext(), TripForecastActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("clickedTrip", clickedTrip);
-                intent.putExtras(bundle);
+                //Bundle bundle = new Bundle();
+                //bundle.putParcelable("clickedTrip", clickedTrip);
+                //intent.putExtras(bundle);
                 mContext.startActivity(intent);
 
             }

@@ -25,10 +25,20 @@ public class WeatherForecast {
     private String TD;
     private String R;
 
+    private String stationEndpointName;
+
+    public String getStationEndpointName() {
+        return stationEndpointName;
+    }
+
+    public void setStationEndpointName(String stationEndpointName) {
+        this.stationEndpointName = stationEndpointName;
+    }
+
     public WeatherForecast() {
     }
 
-    public WeatherForecast(Trip trip, String ftime, int f, String d, int t, String w, String v, String n, String TD, String r) {
+    public WeatherForecast(Trip trip, String ftime, int f, String d, int t, String w, String v, String n, String TD, String r, String stationEndpointName) {
         this.weatherforecasttrip = trip;
         this.ftime = ftime;
         this.F = f;
@@ -39,6 +49,7 @@ public class WeatherForecast {
         this.N = n;
         this.TD = TD;
         this.R = r;
+        this.stationEndpointName = stationEndpointName;
     }
 
     public long getId() {

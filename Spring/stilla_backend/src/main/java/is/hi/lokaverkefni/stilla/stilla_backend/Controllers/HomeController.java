@@ -77,7 +77,7 @@ public class HomeController {
         trip.setWeatherStation(null);
         this.tripService.save(trip);
 
-        WeatherForecast forecast = forecastService.save(new WeatherForecast(trip, "ftime", 5, "d", 2, "w", "v", "n", "TD", "r"));
+        WeatherForecast forecast = forecastService.save(new WeatherForecast(trip, "ftime", 5, "d", 2, "w", "v", "n", "TD", "r", "Reykjavík"));
         List<Trip> trips = tripService.findAll();
 
         return trip;
@@ -103,7 +103,7 @@ public class HomeController {
                     WeatherForecast forecast = trip.getWeatherForecast().get(i);
                     forecastService.save(new WeatherForecast(trip, forecast.getFtime(), forecast.getF(),
                             forecast.getD(), forecast.getT(), forecast.getW(), forecast.getV(),
-                            forecast.getN(), forecast.getTD(), forecast.getR()));
+                            forecast.getN(), forecast.getTD(), forecast.getR(), forecast.getStationEndpointName()));
                 }
             }
 

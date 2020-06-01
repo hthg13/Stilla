@@ -10,6 +10,8 @@ import com.example.stilla_app.Data.Model.MapsRelated.Directions;
 import com.example.stilla_app.Data.Model.MapsRelated.Location;
 import com.example.stilla_app.Data.Model.MapsRelated.RouteBoxer;
 import com.example.stilla_app.Data.Model.Singeltons.AllStationsBase;
+import com.example.stilla_app.Data.Model.Singeltons.CalculatedTrip;
+import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
@@ -18,6 +20,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -74,59 +78,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();            // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);
-        String origin = "Reykjavík";
-        String destination = "Stóri Núpur";
-        getDirections(origin,destination);
-    }
+        Trip trip = CalculatedTrip.get().getTrip();
 
-    private void getDirections(String origin, String destination) {
-        Call<Directions> call = mGoogleApi.getDirections(origin,destination,GOOGLE_API_KEY);
-        call.enqueue(new Callback<Directions>() {
-            @Override
-            public void onResponse(Call<Directions> call, Response<Directions> response) {
-                Directions directions = response.body();
-                List<Location> location = directions.getAllLocations();
-                List<LatLng> latlng = directions.getAllLatLng();
+        Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(trip.getGoogleDirectionListLatLong()));
 
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+        for (int i=0; i<AllStationsBase.get().getAvalableStations().size(); i++){
+            mMap.addMarker(new MarkerOptions()
+                    .position(AllStationsBase.get().getAvalableStations().get(i).getLatLng())
+                    .icon(bitmapDescriptor));
+        }
 
-                RouteBoxer rboxer = new RouteBoxer();
-                List<RouteBoxer.LatLng> rboxerlist = rboxer.decodePath(directions.getRoutes().get(0).getOverview_polyline().getPoints());
-                List<LatLng> googleList = rboxer.rboxerlltogooglell(rboxerlist);
-
-                Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(googleList));
-                //polyline.setColor(ContextCompat.getColor(getActivity));
-
-                int n = googleList.size();
-                for(int i=0;i<n;i++) {
-                    //mMap.addMarker(new MarkerOptions().position(allStations.get(i).getLatLng()));
-                }
-
-                List<LatLng> allStationsLatLng = getAllStationLatLng(allStations);
-
-                List<Double> distanceList = new ArrayList<>();
-                List<Double> distanceListLess = new ArrayList<>();
-
-                int m = allStationsLatLng.size();
-
-                for (int i=0; i<m; i++) {
-                    WeatherStation currentStation = allStations.get(i);
-                    for (int j=0; j<n; j++) {
-                        LatLng currLatLngMap = googleList.get(j);
-                        double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
-                        if(distance < 1) {
-                            distanceListLess.add(distance);
-                            mMap.addMarker(new MarkerOptions().position(currentStation.getLatLng()));
-                        }
-                        distanceList.add(distance);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Directions> call, Throwable t) {
-                System.out.println(t);
-            }
-        });
+        BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        for (int i = 0; i<trip.getWeatherStations().size(); i++) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(trip.getWeatherStations().get(i).getLatLng())
+                    .title(trip.getWeatherStations().get(i).getName())
+                    .icon(bitmapDescriptor2));
+        }
     }
 }

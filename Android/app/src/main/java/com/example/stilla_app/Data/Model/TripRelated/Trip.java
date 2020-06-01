@@ -34,8 +34,36 @@ public class Trip implements Parcelable {
     @ElementList(required = false)
     public List<Forecast> weatherForecast;
 
-    @JsonIgnore
-    public ArrayList<LatLng> googleDirectionList;
+    @ElementList(required = false)
+    public List<String> googleDirectionList;
+
+    public List<String> getGoogleDirectionList() {
+        return this.googleDirectionList;
+    }
+
+    public List<LatLng> getGoogleDirectionListLatLong() {
+        int n = googleDirectionList.size();
+
+        List<LatLng> newgoogleList = new ArrayList<>();
+
+        for(int i=0; i<n; i++) {
+            String currentLatLng = googleDirectionList.get(i);
+            currentLatLng = currentLatLng.substring(currentLatLng.indexOf("(") + 1);
+            currentLatLng = currentLatLng.substring(0, currentLatLng.indexOf(")"));
+
+            String[] latlng = currentLatLng.split(",");
+
+            LatLng realLatLong = new LatLng(Double.parseDouble(latlng[0]), Double.parseDouble(latlng[1]));
+
+            newgoogleList.add(realLatLong);
+        }
+
+        return newgoogleList;
+    }
+
+    public void setGoogleDirectionList(List<String> googleDirectionList) {
+        this.googleDirectionList = googleDirectionList;
+    }
 
     public Trip() {
     }
@@ -122,16 +150,6 @@ public class Trip implements Parcelable {
     }
 
     @JsonIgnore
-    public ArrayList<LatLng> getGoogleDirectionList() {
-        return googleDirectionList;
-    }
-
-    @JsonIgnore
-    public void setGoogleDirectionList(ArrayList<LatLng> googleDirectionList) {
-        this.googleDirectionList = googleDirectionList;
-    }
-
-    @JsonIgnore
     public List<LatLng> getAllStationCoordinates() {
         List<LatLng> latLngList = new ArrayList<>();
 
@@ -162,6 +180,7 @@ public class Trip implements Parcelable {
         dest.writeStringList(this.places);
         dest.writeTypedList(this.weatherStation);
         dest.writeTypedList(this.weatherForecast);
+        dest.writeStringList(this.googleDirectionList);
     }
 
     @JsonIgnore
@@ -175,6 +194,7 @@ public class Trip implements Parcelable {
         this.places = in.createStringArrayList();
         this.weatherStation = in.createTypedArrayList(WeatherStation.CREATOR);
         this.weatherForecast = in.createTypedArrayList(Forecast.CREATOR);
+        this.googleDirectionList = in.createStringArrayList();
     }
 
     @JsonIgnore

@@ -9,6 +9,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.stilla_app.Data.Model.Singeltons.CalculatedTrip;
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.Data.Network.MethodsAPI;
@@ -40,10 +42,6 @@ public class TripForecastActivity extends AppCompatActivity {
     private ArrayList<String> mR = new ArrayList<>();
 
     private ArrayList<String> mStationEndpointName = new ArrayList<>();
-    //private ArrayList<String> mStaionArea = new ArrayList<>();
-    //private List<WeatherStation> mAllStations = new ArrayList<>();
-
-    // station name, destination name
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +62,8 @@ public class TripForecastActivity extends AppCompatActivity {
         actionBar.setLogo(R.mipmap.ic_stilla_logo_and_name_round);
         actionBar.setDisplayUseLogoEnabled(true);
 
-        Bundle bundle = getIntent().getExtras();
-        Trip clickedTrip = bundle.getParcelable("clickedTrip");
+        //Bundle bundle = getIntent().getExtras();
+        Trip clickedTrip = CalculatedTrip.get().getTrip();
         System.out.println("Nafn ferðarinnar sem ýtt var á: " + clickedTrip.getName());
 
         name.setText(clickedTrip.getName());
@@ -99,7 +97,6 @@ public class TripForecastActivity extends AppCompatActivity {
         mTD.clear();
         mR.clear();
         mStationEndpointName.clear();
-        //mStaionArea.clear();
 
         for (int i=0; i<n; i++) {
             mTime.add(weatherForecasts.get(i).getFtime());
@@ -111,10 +108,7 @@ public class TripForecastActivity extends AppCompatActivity {
             mN.add(weatherForecasts.get(i).getN());
             mTD.add(weatherForecasts.get(i).getTD());
             mR.add(weatherForecasts.get(i).getR());
-
-            mStationEndpointName.add(weatherForecasts.get(i).getDestinationName());
-            System.out.println(weatherForecasts.get(i).getDestinationName());
-            //mStaionArea.add("");
+            mStationEndpointName.add(weatherForecasts.get(i).getStationEndpointName());
         }
 
         initRecyclerView();
@@ -122,7 +116,7 @@ public class TripForecastActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_trip_forecast);
-        RecyclerViewAdaper_trip_forecast adapter = new RecyclerViewAdaper_trip_forecast(this, mTime,mF, mT, mD, mW,mN,mR,mTD,mStationEndpointName/*,mStaionArea*/);
+        RecyclerViewAdaper_trip_forecast adapter = new RecyclerViewAdaper_trip_forecast(this, mTime,mF, mT, mD, mW,mN,mR,mTD,mStationEndpointName);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

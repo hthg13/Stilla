@@ -3,6 +3,7 @@ package is.hi.lokaverkefni.stilla.stilla_backend.Entities;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.maps.model.LatLng;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
@@ -43,6 +44,16 @@ public class Trip {
     //@JsonIgnoreProperties({"weatherforecasttrip"})
     public List<WeatherForecast> weatherForecast = new ArrayList<>();
 
+    @ElementCollection
+    public List<String> googleDirectionList = new ArrayList<>();
+
+    public List<String> getGoogleDirectionList() {
+        return googleDirectionList;
+    }
+
+    public void setGoogleDirectionList(List<String> googleDirectionList) {
+        this.googleDirectionList = googleDirectionList;
+    }
 
     public Trip() {
     }

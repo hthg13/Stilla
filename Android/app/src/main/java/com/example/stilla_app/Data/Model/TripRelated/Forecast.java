@@ -61,8 +61,11 @@ public class Forecast implements Parcelable {
     @Element(name = "R", required = false)
     private String R;
 
-    @JsonIgnore
-    private String destinationName;
+    // stationEndpointName
+    @JsonProperty(required = false)
+    @JsonAlias({"stationEndpointName"})
+    @Element(name = "stationEndpointName", required = false)
+    private String stationEndpointName;
 
     @JsonIgnore
     private String weatherStationName;
@@ -145,15 +148,12 @@ public class Forecast implements Parcelable {
         R = r;
     }
 
-
-    @JsonIgnore
-    public String getDestinationName() {
-        return destinationName;
+    public String getStationEndpointName() {
+        return stationEndpointName;
     }
 
-    @JsonIgnore
-    public void setDestinationName(String destinationName) {
-        this.destinationName = destinationName;
+    public void setStationEndpointName(String stationEndpointName) {
+        this.stationEndpointName = stationEndpointName;
     }
 
     @JsonIgnore
@@ -195,6 +195,7 @@ public class Forecast implements Parcelable {
         dest.writeString(N);
         dest.writeString(TD);
         dest.writeString(R);
+        dest.writeString(stationEndpointName);
     }
 
     @JsonIgnore
@@ -209,6 +210,7 @@ public class Forecast implements Parcelable {
         N = in.readString();
         TD = in.readString();
         R = in.readString();
+        stationEndpointName = in.readString();
     }
 
     @JsonIgnore

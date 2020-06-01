@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.stilla_app.Data.Model.Singeltons.AllStationsBase;
 import com.example.stilla_app.Data.Model.Singeltons.AllTripsBase;
+import com.example.stilla_app.Data.Model.TripRelated.Forecasts;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.MethodsAPI;
@@ -18,20 +19,24 @@ import com.example.stilla_app.Data.Network.StillaAPI;
 import com.example.stilla_app.Data.Network.StillaClient;
 import com.example.stilla_app.R;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+
 public class OptionActivity extends AppCompatActivity {
 
-    private StillaAPI stillaAPI;
+    private StillaAPI mStillaAPI;
     private MethodsAPI mMethodsAPI = new MethodsAPI();
 
-    private List<WeatherStation> allStations;
+    private List<WeatherStation> allStations = new ArrayList<>();
     private List<Trip> allTrips;
 
     private Button mButtonNewTrip;
     private Button mButtonAllTrips;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
