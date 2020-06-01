@@ -59,74 +59,54 @@ public class CreateTripAlgo extends IntentService {
         ArrayList<String> destinations = new ArrayList<>(trip.getPlaces());
         allStations = AllStationsBase.get().getAllStations();
 
-        // todo remove after debugging
-        allStations = AllStationsBase.get().getAllStations();
-        int o = allStations.size();
-        int numValidStations = 0;
-        List<WeatherStation> avalableStations = new ArrayList<>();
-        mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
-        for (int i = 0; i<o; i++) {
-            int currentStationId = (int) allStations.get(i).getId();
-            Call<Forecasts> call2 = mStillaAPI.getWeatherForStationId(OP_W, TYPE, LANG, VIEW, currentStationId, params);
-            try {
-                Forecasts forecasts = call2.execute().body();
-                if (forecasts.getStation().getErr() == null) {
-                    numValidStations = numValidStations + 1;
-                    avalableStations.add(allStations.get(i));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println(numValidStations);
-        AllStationsBase.get().setAvalableStations(avalableStations);
-        allStationsAvalable = AllStationsBase.get().getAvalableStations();
-
         // for each of the "legs" between destinations calculate
         for (int i = 0; i < destinations.size() - 1; i++) {
-            final int j = i;
 
             String origin = destinations.get(i);
             String dest = destinations.get(i + 1);
 
             Call<Directions> call = mGoogleApi.getDirections(origin, dest, GOOGLE_API_KEY);
+            ArrayList<Directions> directions = new ArrayList<>();
             try {
-                mDirections.add(call.execute().body());
+                directions.add(call.execute().body());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            int n = mDirections.size();
+            int n = directions.size();
 
             // get the durations between start and finish destinations
-            mDurationValues.add(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).getDuration().getValue());
+            mDurationValues.add(directions.get(n - 1).getRoutes().get(0).getLegs().get(0).getDuration().getValue());
 
             // get all the latlng positions on the directed path, mGoogleLatLngList will be used for polyline drawing
-            mRboxerLatLnglistAll = (mRouteBoxer.decodePath(mDirections.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints()));
+            mRboxerLatLnglistAll = (mRouteBoxer.decodePath(directions.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints()));
             mGoogleLatLngListAll.addAll(mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll));
 
             List<LatLng> useList = mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll);
 
             // latlng of all stations avalable
-            mAllStationsLatLng = getAllStationLatLng(allStationsAvalable);
+            mAllStationsLatLng = getAllStationLatLng(allStations);
 
             // find all the stations that are within 5 km from the path
             // todo change so that if the weather stations are fiewer than 5 repeat with range larger
             mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
             for (int k = 0; k < mAllStationsLatLng.size(); k++) {
-                WeatherStation currentStation = allStationsAvalable.get(k);
-                for (int l = 0; l < n; l++) {
+                WeatherStation currentStation = allStations.get(k);
+                for (int l = 0; l < useList.size(); l++) {
                     LatLng currLatLngMap = useList.get(l);
                     double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
-                    if (distance < 200) {
-                        /*if (l > 0 && (mAllStationsToUse.get(i-1) != currentStation)) {
+                    if (distance < 1) {
+                        /*
+                        if (l > 0 && (mAllStationsToUse.get(i-1) != currentStation)) {
                             mAllStationsToUse.add(currentStation);
-                        }
-                        if (l == 0) {
+                            System.out.println(k + ". nafn veðurstöðvar sem er bætt við ferðina: " + currentStation.getName());
+                        } else if (l == 0) {
                             mAllStationsToUse.add(currentStation);
+                            System.out.println(k + ". nafn veðurstöðvar sem er bætt við ferðina: " + currentStation.getName());
                         }
 
                          */
                         mAllStationsToUse.add(currentStation);
+                        System.out.println(k + ". nafn veðurstöðvar sem er bætt við ferðina: " + currentStation.getName());
                     }
                 }
             }
@@ -141,8 +121,8 @@ public class CreateTripAlgo extends IntentService {
                     Forecasts forecasts = call2.execute().body();
                     if (forecasts.getStation().getErr() == null) {
                         for (int z=0; z<forecasts.getStation().getForecast().size(); z++) {
-                            String[] startpoints = mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address.split(",");
-                            String[] endpoints = mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address.split(",");
+                            String[] startpoints = directions.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address.split(",");
+                            String[] endpoints = directions.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address.split(",");
                             forecasts.getStation().getForecast().get(z).setStationEndpointName(startpoints[0] + " - " + endpoints[0]);
                         }
                         mAllForecasts.addAll(forecasts.getStation().getForecast());
@@ -153,12 +133,15 @@ public class CreateTripAlgo extends IntentService {
             }
 
             System.out.println("*****************************************************************");
-            System.out.println("UPPHAFSSTAÐUR: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address);
-            System.out.println("TÍMI MILLI STAÐA: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).duration.getText());
-            System.out.println("LOKASTAÐUR: " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
+            System.out.println("UPPHAFSSTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address);
+            System.out.println("TÍMI MILLI STAÐA: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).duration.getText());
+            System.out.println("LOKASTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
             System.out.println("FJÖLDI VEÐURSTÖÐVA: " + mAllStationsToUse.size());
             System.out.println("HEILDARFJÖLDI VEÐURSPÁA: " + mAllForecasts.size());
             System.out.println("*****************************************************************");
+
+            // todo this was added
+            mDirections.addAll(directions);
         }
 
         // finish setting up the trip

@@ -82,12 +82,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(trip.getGoogleDirectionListLatLong()));
 
+        /*
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
         for (int i=0; i<AllStationsBase.get().getAvalableStations().size(); i++){
             mMap.addMarker(new MarkerOptions()
                     .position(AllStationsBase.get().getAvalableStations().get(i).getLatLng())
                     .icon(bitmapDescriptor));
         }
+        */
 
         BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
         for (int i = 0; i<trip.getWeatherStations().size(); i++) {
