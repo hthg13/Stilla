@@ -27,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.Activities.ForecastActivity" />
         <activity android:name=".View.Activities.TripActivity" />
         <service android:name=".Data.Model.TripRelated.CreateTripAlgo" android:exported="false"></service>
         <!--

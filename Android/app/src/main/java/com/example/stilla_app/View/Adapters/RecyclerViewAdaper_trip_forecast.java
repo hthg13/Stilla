@@ -21,15 +21,15 @@ public class RecyclerViewAdaper_trip_forecast extends RecyclerView.Adapter<Recyc
     private ArrayList<String> r = new ArrayList<>();
     private ArrayList<String> td = new ArrayList<>();
     //private ArrayList<String> dest = new ArrayList<>();
-    private ArrayList<String> stationName = new ArrayList<>();
-    private ArrayList<String> stationArea = new ArrayList<>();
+    //private ArrayList<String> stationName = new ArrayList<>();
+    private ArrayList<String> stationEndpoint = new ArrayList<>();
     private Context mContext;
 
     public RecyclerViewAdaper_trip_forecast(Context context, ArrayList<String> time, ArrayList<String> f,
                                             ArrayList<String> t, ArrayList<String> d, ArrayList<String> w,
                                             ArrayList<String> n, ArrayList<String> r, ArrayList<String> td,
-                                            /*ArrayList<String> dest, */ArrayList<String> stationName,
-                                            ArrayList<String> stationArea) {
+                                            /*ArrayList<String> dest, */ArrayList<String> stationEndpoint
+                                            /*ArrayList<String> stationArea*/) {
         this.time = time;
         this.f = f;
         this.t = t;
@@ -39,8 +39,8 @@ public class RecyclerViewAdaper_trip_forecast extends RecyclerView.Adapter<Recyc
         this.r = r;
         this.td = td;
         //this.dest = dest;
-        this.stationName = stationName;
-        this.stationArea = stationArea;
+        this.stationEndpoint = stationEndpoint;
+        //this.stationArea = stationArea;
         mContext = context;
     }
 
@@ -63,8 +63,8 @@ public class RecyclerViewAdaper_trip_forecast extends RecyclerView.Adapter<Recyc
         holder.r.setText(r.get(position));
         holder.td.setText(r.get(position));
         //holder.dest.setText(dest.get(position));
-        holder.stationName.setText(stationName.get(position));
-        holder.stationArea.setText(stationArea.get(position));
+        //holder.stationName.setText(stationName.get(position));
+        holder.stationEndpoint.setText(stationEndpoint.get(position));
     }
 
     @Override
@@ -83,8 +83,8 @@ public class RecyclerViewAdaper_trip_forecast extends RecyclerView.Adapter<Recyc
         TextView r;
         TextView td;
         //TextView dest;
-        TextView stationName;
-        TextView stationArea;
+        //TextView stationName;
+        TextView stationEndpoint;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -98,8 +98,8 @@ public class RecyclerViewAdaper_trip_forecast extends RecyclerView.Adapter<Recyc
             r= itemView.findViewById(R.id.forecast_r);
             td= itemView.findViewById(R.id.forecast_td);
             //dest= itemView.findViewById(R.id.f);
-            stationName= itemView.findViewById(R.id.forecast_station_name);
-            stationArea= itemView.findViewById(R.id.forecast_station_area);
+            //stationName= itemView.findViewById(R.id.forecast_station_name);
+            stationEndpoint= itemView.findViewById(R.id.forecast_endpoint_name);
         }
     }
 }

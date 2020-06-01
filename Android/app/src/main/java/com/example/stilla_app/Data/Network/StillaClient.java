@@ -1,5 +1,7 @@
 package com.example.stilla_app.Data.Network;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -25,9 +27,14 @@ public class StillaClient {
     }
 
     public static Retrofit getStillaClient() {
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         return new Retrofit.Builder()
                 .baseUrl(STILLA_API_URL)
-                .client(new OkHttpClient())
+                .client(okHttpClient)
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
     }

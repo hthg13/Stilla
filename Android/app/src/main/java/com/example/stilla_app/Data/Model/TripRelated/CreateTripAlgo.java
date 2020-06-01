@@ -118,6 +118,10 @@ public class CreateTripAlgo extends IntentService {
                 try {
                     Forecasts forecasts = call2.execute().body();
                     if (forecasts.getStation().getErr() == null) {
+                        for (int z=0; z<forecasts.getStation().getForecast().size(); z++) {
+                            forecasts.getStation().getForecast().get(z).setDestinationName(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address + " - " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
+                            System.out.println(forecasts.getStation().getForecast().get(z).getDestinationName());
+                        }
                         mAllForecasts.addAll(forecasts.getStation().getForecast());
                     }
                 } catch (IOException e) {
@@ -125,9 +129,10 @@ public class CreateTripAlgo extends IntentService {
                 }
 
                 // set destination name to all forecasts
-                for (int y = 0; y < mAllForecasts.size(); y++) {
-                    mAllForecasts.get(y).setDestinationName(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
-                }
+                //for (int y = 0; y < mAllForecasts.size(); y++) {
+                //    mAllForecasts.get(y).setDestinationName(mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address + " - " + mDirections.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
+                //    System.out.println(mAllForecasts.get(y).getDestinationName());
+                //}
             }
 
             System.out.println("*****************************************************************");
@@ -167,6 +172,7 @@ public class CreateTripAlgo extends IntentService {
             @Override
             public void onFailure(Call<Trip> call, Throwable t) {
                 Toast.makeText(getApplicationContext(),"Tókst því miður ekki að vista ferðina, reyndu aftur",Toast.LENGTH_LONG).show();
+                System.out.println("FAILURE: " + t);
             }
         });
     }

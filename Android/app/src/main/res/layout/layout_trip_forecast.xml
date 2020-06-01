@@ -25,6 +25,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/stationEndpointName">
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/time">
                 </TextView>
 
@@ -70,17 +76,13 @@
                     android:text="@string/td">
                 </TextView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stationName">
-                </TextView>
-
+                <!--
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stationArea">
                 </TextView>
+                -->
 
             </LinearLayout>
 
@@ -89,6 +91,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_margin="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stationEndpointName"
+                    android:id="@+id/forecast_endpoint_name">
+                </TextView>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -146,19 +155,14 @@
                     android:id="@+id/forecast_td">
                 </TextView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stationName"
-                    android:id="@+id/forecast_station_name">
-                </TextView>
-
+                <!--
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stationArea"
                     android:id="@+id/forecast_station_area">
                 </TextView>
+                -->
 
             </LinearLayout>
 

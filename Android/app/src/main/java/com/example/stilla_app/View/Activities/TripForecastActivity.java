@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.stilla_app.Data.Model.TripRelated.Forecast;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
-import com.example.stilla_app.Data.Model.TripRelated.WeatherStation;
 import com.example.stilla_app.Data.Network.MethodsAPI;
 import com.example.stilla_app.R;
 import com.example.stilla_app.View.Adapters.RecyclerViewAdaper_trip_forecast;
@@ -40,9 +39,9 @@ public class TripForecastActivity extends AppCompatActivity {
     private ArrayList<String> mTD = new ArrayList<>();
     private ArrayList<String> mR = new ArrayList<>();
 
-    private ArrayList<String> mStationName = new ArrayList<>();
-    private ArrayList<String> mStaionArea = new ArrayList<>();
-    private List<WeatherStation> mAllStations = new ArrayList<>();
+    private ArrayList<String> mStationEndpointName = new ArrayList<>();
+    //private ArrayList<String> mStaionArea = new ArrayList<>();
+    //private List<WeatherStation> mAllStations = new ArrayList<>();
 
     // station name, destination name
 
@@ -99,9 +98,8 @@ public class TripForecastActivity extends AppCompatActivity {
         mN.clear();
         mTD.clear();
         mR.clear();
-
-        mStationName.clear();
-        mStaionArea.clear();
+        mStationEndpointName.clear();
+        //mStaionArea.clear();
 
         for (int i=0; i<n; i++) {
             mTime.add(weatherForecasts.get(i).getFtime());
@@ -114,8 +112,9 @@ public class TripForecastActivity extends AppCompatActivity {
             mTD.add(weatherForecasts.get(i).getTD());
             mR.add(weatherForecasts.get(i).getR());
 
-            mStationName.add("");
-            mStaionArea.add("");
+            mStationEndpointName.add(weatherForecasts.get(i).getDestinationName());
+            System.out.println(weatherForecasts.get(i).getDestinationName());
+            //mStaionArea.add("");
         }
 
         initRecyclerView();
@@ -123,7 +122,7 @@ public class TripForecastActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_trip_forecast);
-        RecyclerViewAdaper_trip_forecast adapter = new RecyclerViewAdaper_trip_forecast(this, mTime,mF, mT, mD, mW,mN,mR,mTD,mStationName,mStaionArea);
+        RecyclerViewAdaper_trip_forecast adapter = new RecyclerViewAdaper_trip_forecast(this, mTime,mF, mT, mD, mW,mN,mR,mTD,mStationEndpointName/*,mStaionArea*/);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

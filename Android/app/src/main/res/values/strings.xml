@@ -30,4 +30,5 @@
     <string name="dest">Áfangastaður</string>
     <string name="stationName">Nafn stöðvar</string>
     <string name="stationArea">Svæði stöðvar</string>
+    <string name="stationEndpointName">Áfangastaður</string>
 </resources>
