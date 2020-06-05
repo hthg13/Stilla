@@ -165,9 +165,9 @@ public class CreateTripAlgo extends IntentService {
 
             // set the googleLatlnglist to the correct format ie string format instead of latlng
             List<String> googleLatLngListString = new ArrayList<>();
-            for (int i = 0; i < mAllStationsLatLngToUse/*mGoogleLatLngListAll*/.size(); i++) {
-                //googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
-                googleLatLngListString.add(mAllStationsLatLngToUse.get(i).toString());
+            for (int i = 0; i < mGoogleLatLngListAll.size(); i++) {
+                googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
+                //googleLatLngListString.add(mAllStationsLatLngToUse.get(i).toString());
             }
 
             // finish setting up the trip
