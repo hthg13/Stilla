@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -62,7 +64,6 @@ public class TripForecastActivity extends AppCompatActivity {
         actionBar.setLogo(R.mipmap.ic_stilla_logo_and_name_round);
         actionBar.setDisplayUseLogoEnabled(true);
 
-        //Bundle bundle = getIntent().getExtras();
         Trip clickedTrip = CalculatedTrip.get().getTrip();
         System.out.println("Nafn ferðarinnar sem ýtt var á: " + clickedTrip.getName());
 
@@ -72,6 +73,7 @@ public class TripForecastActivity extends AppCompatActivity {
         transportation.setText(listToText(clickedTrip.getTransport()));
         destinations.setText(listToText(clickedTrip.getPlaces()));
         notifications.setText(booleanToText(clickedTrip.isNotify()));
+        viewMapButton.setVisibility(View.VISIBLE);
 
         initListItems(clickedTrip.weatherForecast);
 
@@ -86,6 +88,11 @@ public class TripForecastActivity extends AppCompatActivity {
 
     private void initListItems(List<Forecast> weatherForecasts) {
         int n = weatherForecasts.size();
+
+        if (n==0){
+            Toast.makeText(getApplicationContext(),"Því miður tókst ekki að reikna veðurspá fyrir gefna ferðaáætlun",Toast.LENGTH_LONG).show();
+            viewMapButton.setVisibility(View.INVISIBLE);
+        }
 
         mTime.clear();
         mF.clear();

@@ -61,29 +61,6 @@ public class TripActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
 
-        /*
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                System.out.println("hello reciever ========================================================================");
-
-                Trip trip = intent.getParcelableExtra("trip");
-                System.out.println(trip.getPlaces());
-
-                ArrayList<LatLng> googleLine = intent.getParcelableArrayListExtra("googleLine");
-                System.out.println(googleLine.size());
-
-                mMethodsAPI.setTrip(trip);
-            }
-        };
-
-        filter = new IntentFilter();
-        filter.addAction("com.local.receiver");
-        registerReceiver(mReceiver,filter);
-
-         */
-
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Ný Ferð");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -102,8 +79,8 @@ public class TripActivity extends AppCompatActivity implements
         TextInputEditText input_trip_destinations = (TextInputEditText) findViewById(R.id.textInput_destinations);
 
         input_trip_name.setText("Nýjustu prufuferðirnar");
-        input_trip_start.setText("today");
-        input_trip_finish.setText("tomorrow");
+        input_trip_start.setText("03-06-2020 12:00");
+        input_trip_finish.setText("05-09-2020 12:00");
         input_trip_destinations.setText("Reykjavík,Akureyri,Höfn");
 
         TextInputLayout input_trip_name_layout = (TextInputLayout) findViewById(R.id.textInput_trip_name_layout);

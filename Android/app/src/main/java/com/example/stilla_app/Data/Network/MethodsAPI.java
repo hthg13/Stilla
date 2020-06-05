@@ -40,7 +40,7 @@ public class MethodsAPI {
         String VIEW = "xml";
 
         stillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
-        APIgetAllForecasts(OP_W,TYPE,LANG,VIEW,StationId,params);
+        //APIgetAllForecasts(OP_W,TYPE,LANG,VIEW,StationId,params);
         return mForecasts;
     }
 
@@ -103,6 +103,7 @@ public class MethodsAPI {
         });
     }
 
+    /*
     private void APIgetAllForecasts(String OP_W,String TYPE,String LANG,String VIEW,int StationId,String params) {
         Call<Forecasts> call = stillaAPI.getWeatherForStationId(OP_W,TYPE,LANG,VIEW,StationId,params);
         call.enqueue(new Callback<Forecasts>() {
@@ -120,6 +121,7 @@ public class MethodsAPI {
             }
         });
     }
+    */
 
     private void APIgetTextForecast() {
         Call<TextForecast> call = stillaAPI.getWeatherTextNextDays();

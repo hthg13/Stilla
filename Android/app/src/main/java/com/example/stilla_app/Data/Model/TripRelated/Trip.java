@@ -150,6 +150,41 @@ public class Trip implements Parcelable {
     }
 
     @JsonIgnore
+    public int getDay() {
+        String time = this.getStart();
+        String[] splitTime = time.split("-");
+        int day = Integer.parseInt(splitTime[0]);
+        return day;
+    }
+
+    @JsonIgnore
+    public int getMonth() {
+        String time = this.getStart();
+        String[] splitTime = time.split("-");
+        int month = Integer.parseInt(splitTime[1]);
+        return month;
+    }
+
+    @JsonIgnore
+    public int getYear() {
+        String time = this.getStart();
+        String[] splitTime = time.split("-");
+        String[] splitYear = splitTime[2].split(" ");
+        int year = Integer.parseInt(splitYear[0]);
+        return year;
+    }
+
+    @JsonIgnore
+    public int getTime() {
+        String time = this.getStart();
+        String[] splitTime = time.split(" ");
+        String clock = splitTime[1];
+        String[] hourClock = clock.split(":");
+        int hour = Integer.parseInt(hourClock[0]);
+        return hour;
+    }
+
+    @JsonIgnore
     public List<LatLng> getAllStationCoordinates() {
         List<LatLng> latLngList = new ArrayList<>();
 

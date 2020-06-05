@@ -1,5 +1,6 @@
 package com.example.stilla_app.View.Activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -67,13 +68,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         allStations = AllStationsBase.get().getAllStations();
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(64.1465944, -21.9426321);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Iceland"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng reykjavik = new LatLng(64.1465944, -21.9426321);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(reykjavik));
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(sydney)      // Sets the center of the map to location user
+                .target(reykjavik)      // Sets the center of the map to location user
                 .zoom(5)             // Sets the zoom
                 .build();            // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -82,21 +81,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(trip.getGoogleDirectionListLatLong()));
 
-        /*
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-        for (int i=0; i<AllStationsBase.get().getAvalableStations().size(); i++){
-            mMap.addMarker(new MarkerOptions()
-                    .position(AllStationsBase.get().getAvalableStations().get(i).getLatLng())
-                    .icon(bitmapDescriptor));
-        }
-        */
+        float[] hsv = new float[3];
+        Color.colorToHSV(Color.parseColor("#9F780A"), hsv);
 
-        BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
         for (int i = 0; i<trip.getWeatherStations().size(); i++) {
             mMap.addMarker(new MarkerOptions()
                     .position(trip.getWeatherStations().get(i).getLatLng())
                     .title(trip.getWeatherStations().get(i).getName())
-                    .icon(bitmapDescriptor2));
+                    .icon(BitmapDescriptorFactory.defaultMarker(hsv[0])));
         }
     }
 }

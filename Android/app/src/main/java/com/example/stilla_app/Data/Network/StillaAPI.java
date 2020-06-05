@@ -34,7 +34,7 @@ public interface StillaAPI {
      * @return Forecast java object
      */
     @GET(BASE_URL_VEDUR_API + "/")
-    Call<Forecasts> getWeatherForStationId(@Query("op_w") String op_w, @Query("type") String type, @Query("lang") String lang, @Query("view") String view, @Query("ids") int ids, @Query("params") String params);
+    Call<Forecasts> getWeatherForStationId(@Query("op_w") String op_w, @Query("type") String type, @Query("lang") String lang, @Query("view") String view, @Query("ids") int ids, @Query("params") String params, @Query("time") String time);
 
     /**
      * gets the text format of weather forecast for the whole country for the next week from call
