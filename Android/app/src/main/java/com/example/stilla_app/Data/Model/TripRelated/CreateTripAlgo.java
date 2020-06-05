@@ -53,6 +53,7 @@ public class CreateTripAlgo extends IntentService {
     private List<LatLng> mAllStationsLatLng = new ArrayList<>();
     private List<WeatherStation> mAllStationsToUse = new ArrayList<>();
     private List<Forecast> mAllForecasts = new ArrayList<>();
+    private List<LatLng> mAllStationsLatLngToUse = new ArrayList<>();
 
     private String params = "F;D;T;W;V;N;TD;R";
     private String OP_W = "xml";
@@ -112,6 +113,7 @@ public class CreateTripAlgo extends IntentService {
 
             // find all the stations that are within 1 km from the path
             List<WeatherStation> stationsToUseForThisLeg = new ArrayList<>();
+            List<LatLng> latlngToUseThisLeg = new ArrayList<>();
             mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
             for (int k = 0; k < useList.size(); k++) {
                 LatLng currLatLngMap = useList.get(k);
@@ -120,6 +122,7 @@ public class CreateTripAlgo extends IntentService {
                     double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
                     if (distance < 1) {
                         stationsToUseForThisLeg.add(currentStation);
+                        latlngToUseThisLeg.add(currLatLngMap);
                     }
                 }
             }
@@ -140,6 +143,7 @@ public class CreateTripAlgo extends IntentService {
             mDirections.addAll(directions);
             mAllStationsToUse.addAll(newStationsToUseThisLeg);
             mAllForecasts.addAll(foracastsThisLeg);
+            mAllStationsLatLngToUse.addAll(latlngToUseThisLeg);
         }
 
         ArrayList<WeatherStation> cleanList = new ArrayList<>(new HashSet<>(mAllStationsToUse));
@@ -152,8 +156,9 @@ public class CreateTripAlgo extends IntentService {
 
         // set the googleLatlnglist to the correct format ie string format instead of latlng
         List<String> googleLatLngListString = new ArrayList<>();
-        for (int i=0;i<mGoogleLatLngListAll.size();i++) {
-            googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
+        for (int i=0;i<mAllStationsLatLngToUse/*mGoogleLatLngListAll*/.size();i++) {
+            //googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
+            googleLatLngListString.add(mAllStationsLatLngToUse.get(i).toString());
         }
 
         // finish setting up the trip

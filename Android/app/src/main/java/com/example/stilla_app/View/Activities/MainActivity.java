@@ -10,6 +10,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.stilla_app.Data.Model.Singeltons.AllStationsBase;
 import com.example.stilla_app.Data.Model.Singeltons.AllTripsBase;
 import com.example.stilla_app.Data.Model.TripRelated.Trip;
 import com.example.stilla_app.R;
@@ -42,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
         createTripButton = (Button) findViewById(R.id.button_new_trip);
         viewAllTripsButton = (Button) findViewById(R.id.button_show_all_trips);
+
+        if (AllTripsBase.get().getTripsList().size() == 0) {
+            Toast.makeText(getApplicationContext(),"Þú átt engar vistaðar ferðir",Toast.LENGTH_LONG).show();
+        }
 
         // initialize with singelton class alltripsbase
         initListItems(AllTripsBase.get().getTripsList());

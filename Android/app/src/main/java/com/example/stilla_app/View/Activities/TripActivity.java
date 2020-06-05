@@ -79,7 +79,7 @@ public class TripActivity extends AppCompatActivity implements
         TextInputEditText input_trip_destinations = (TextInputEditText) findViewById(R.id.textInput_destinations);
 
         input_trip_name.setText("Nýjustu prufuferðirnar");
-        input_trip_start.setText("03-06-2020 12:00");
+        input_trip_start.setText("05-06-2020 12:00");
         input_trip_finish.setText("05-09-2020 12:00");
         input_trip_destinations.setText("Reykjavík,Akureyri,Höfn");
 
