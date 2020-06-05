@@ -55,6 +55,8 @@ public class CreateTripAlgo extends IntentService {
     private List<Forecast> mAllForecasts = new ArrayList<>();
     private List<LatLng> mAllStationsLatLngToUse = new ArrayList<>();
 
+    private boolean hasError = false;
+
     private String params = "F;D;T;W;V;N;TD;R";
     private String OP_W = "xml";
     private String TYPE = "forec";
@@ -70,12 +72,13 @@ public class CreateTripAlgo extends IntentService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onHandleIntent(Intent intent) {
-
         mGoogleApi = StillaClient.getGoogleDirectionsClient().create(StillaAPI.class);
 
         Trip trip = CalculatedTrip.get().getTrip();
         ArrayList<String> destinations = new ArrayList<>(trip.getPlaces());
         allStations = AllStationsBase.get().getAllStations();
+
+        hasError = false;
 
         // for each of the "legs" between destinations calculate
         for (int i = 0; i < destinations.size() - 1; i++) {
@@ -88,7 +91,8 @@ public class CreateTripAlgo extends IntentService {
             try {
                 Directions dir = call.execute().body();
                 if (dir.getRoutes().size() == 0) {
-                    Toast.makeText(getApplicationContext(),"Tókst því miður ekki að vista ferðina, reyndu aftur",Toast.LENGTH_LONG).show();
+                    hasError = true;
+                    Toast.makeText(getApplicationContext(),"Tókst því miður ekki að vista ferðina, villa í áfangastöðum",Toast.LENGTH_LONG).show();
                     Intent intent2 = new Intent(this, MainActivity.class);
                     intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent2);
@@ -97,83 +101,89 @@ public class CreateTripAlgo extends IntentService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            int n = directions.size();
 
-            // get the durations between start and finish destinations
-            mDurationValues.add(directions.get(n - 1).getRoutes().get(0).getLegs().get(0).getDuration().getValue());
+            if (!hasError) {
+                int n = directions.size();
 
-            // get all the latlng positions on the directed path, mGoogleLatLngList will be used for polyline drawing
-            mRboxerLatLnglistAll = (mRouteBoxer.decodePath(directions.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints()));
-            mGoogleLatLngListAll.addAll(mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll));
+                // get the durations between start and finish destinations
+                mDurationValues.add(directions.get(n - 1).getRoutes().get(0).getLegs().get(0).getDuration().getValue());
 
-            List<LatLng> useList = mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll);
+                // get all the latlng positions on the directed path, mGoogleLatLngList will be used for polyline drawing
+                mRboxerLatLnglistAll = (mRouteBoxer.decodePath(directions.get(n - 1).getRoutes().get(0).getOverview_polyline().getPoints()));
+                mGoogleLatLngListAll.addAll(mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll));
 
-            // latlng of all stations avalable
-            mAllStationsLatLng = getAllStationLatLng(allStations);
+                List<LatLng> useList = mRouteBoxer.rboxerlltogooglell(mRboxerLatLnglistAll);
 
-            // find all the stations that are within 1 km from the path
-            List<WeatherStation> stationsToUseForThisLeg = new ArrayList<>();
-            List<LatLng> latlngToUseThisLeg = new ArrayList<>();
-            mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
-            for (int k = 0; k < useList.size(); k++) {
-                LatLng currLatLngMap = useList.get(k);
-                for (int l = 0; l < mAllStationsLatLng.size(); l++) {
-                    WeatherStation currentStation = allStations.get(l);
-                    double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
-                    if (distance < 1) {
-                        stationsToUseForThisLeg.add(currentStation);
-                        latlngToUseThisLeg.add(currLatLngMap);
+                // latlng of all stations avalable
+                mAllStationsLatLng = getAllStationLatLng(allStations);
+
+                // find all the stations that are within 1 km from the path
+                List<WeatherStation> stationsToUseForThisLeg = new ArrayList<>();
+                List<LatLng> latlngToUseThisLeg = new ArrayList<>();
+                mStillaAPI = StillaClient.getVedurstofaClient().create(StillaAPI.class);
+                for (int k = 0; k < useList.size(); k++) {
+                    LatLng currLatLngMap = useList.get(k);
+                    for (int l = 0; l < mAllStationsLatLng.size(); l++) {
+                        WeatherStation currentStation = allStations.get(l);
+                        double distance = getDistance(currentStation.getLatLng(), currLatLngMap);
+                        if (distance < 1) {
+                            stationsToUseForThisLeg.add(currentStation);
+                            latlngToUseThisLeg.add(currLatLngMap);
+                        }
                     }
                 }
+
+                // clean up the list of stations
+                List<WeatherStation> newStationsToUseThisLeg = new ArrayList<>(new HashSet<>(stationsToUseForThisLeg));
+
+                List<Forecast> foracastsThisLeg = calculateForecast(newStationsToUseThisLeg, useList, directions, i, trip, n);
+
+                System.out.println("UPPHAFSSTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address);
+                System.out.println("TÍMI MILLI STAÐA: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).duration.getText());
+                System.out.println("LOKASTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
+                System.out.println("FJÖLDI VEÐURSTÖÐVA: " + stationsToUseForThisLeg.size());
+                System.out.println("HEILDARFJÖLDI VEÐURSPÁA: " + foracastsThisLeg.size());
+                System.out.println("*****************************************************************");
+
+                // todo this was added
+                mDirections.addAll(directions);
+                mAllStationsToUse.addAll(newStationsToUseThisLeg);
+                mAllForecasts.addAll(foracastsThisLeg);
+                mAllStationsLatLngToUse.addAll(latlngToUseThisLeg);
+            }
+        }
+
+        if(!hasError) {
+
+            ArrayList<WeatherStation> cleanList = new ArrayList<>(new HashSet<>(mAllStationsToUse));
+            mAllStationsToUse.clear();
+            mAllStationsToUse.addAll(cleanList);
+
+            for (int k = 0; k < mAllStationsToUse.size(); k++) {
+                Log.d("veðurstöðvar", "nafn: " + mAllStationsToUse.get(k).getId() + " " + mAllStationsToUse.get(k).getName());
             }
 
-            // clean up the list of stations
-            List<WeatherStation> newStationsToUseThisLeg = new ArrayList<>(new HashSet<>(stationsToUseForThisLeg));
+            // set the googleLatlnglist to the correct format ie string format instead of latlng
+            List<String> googleLatLngListString = new ArrayList<>();
+            for (int i = 0; i < mAllStationsLatLngToUse/*mGoogleLatLngListAll*/.size(); i++) {
+                //googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
+                googleLatLngListString.add(mAllStationsLatLngToUse.get(i).toString());
+            }
 
-            List<Forecast> foracastsThisLeg = calculateForecast(newStationsToUseThisLeg, useList, directions, i, trip, n);
+            // finish setting up the trip
+            trip.setWeatherStations(mAllStationsToUse);
+            trip.setWeatherForecasts(mAllForecasts);
+            trip.setGoogleDirectionList(new ArrayList<>(googleLatLngListString));
 
-            System.out.println("UPPHAFSSTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).start_address);
-            System.out.println("TÍMI MILLI STAÐA: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).duration.getText());
-            System.out.println("LOKASTAÐUR: " + directions.get(n - 1).getRoutes().get(0).getLegs().get(0).end_address);
-            System.out.println("FJÖLDI VEÐURSTÖÐVA: " + stationsToUseForThisLeg.size());
-            System.out.println("HEILDARFJÖLDI VEÐURSPÁA: " + foracastsThisLeg.size());
-            System.out.println("*****************************************************************");
+            // set the trip to the singelton class calculated trip for later use
+            CalculatedTrip.get().setTrip(trip);
+            setNewTrip(trip);
 
-            // todo this was added
-            mDirections.addAll(directions);
-            mAllStationsToUse.addAll(newStationsToUseThisLeg);
-            mAllForecasts.addAll(foracastsThisLeg);
-            mAllStationsLatLngToUse.addAll(latlngToUseThisLeg);
+            // start activity MainActivity and add a flag because this class is not an activity
+            Intent intent2 = new Intent(this, MainActivity.class);
+            intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent2);
         }
-
-        ArrayList<WeatherStation> cleanList = new ArrayList<>(new HashSet<>(mAllStationsToUse));
-        mAllStationsToUse.clear();
-        mAllStationsToUse.addAll(cleanList);
-
-        for (int k=0; k<mAllStationsToUse.size(); k++) {
-            Log.d("veðurstöðvar", "nafn: " + mAllStationsToUse.get(k).getId() + " " + mAllStationsToUse.get(k).getName());
-        }
-
-        // set the googleLatlnglist to the correct format ie string format instead of latlng
-        List<String> googleLatLngListString = new ArrayList<>();
-        for (int i=0;i<mAllStationsLatLngToUse/*mGoogleLatLngListAll*/.size();i++) {
-            //googleLatLngListString.add(mGoogleLatLngListAll.get(i).toString());
-            googleLatLngListString.add(mAllStationsLatLngToUse.get(i).toString());
-        }
-
-        // finish setting up the trip
-        trip.setWeatherStations(mAllStationsToUse);
-        trip.setWeatherForecasts(mAllForecasts);
-        trip.setGoogleDirectionList(new ArrayList<>(googleLatLngListString));
-
-        // set the trip to the singelton class calculated trip for later use
-        CalculatedTrip.get().setTrip(trip);
-        setNewTrip(trip);
-
-        // start activity MainActivity and add a flag because this class is not an activity
-        Intent intent2 = new Intent(this, MainActivity.class);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent2);
     }
 
     public int durationOfCurrentLeg = 0;
